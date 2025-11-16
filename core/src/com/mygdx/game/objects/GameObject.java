@@ -63,7 +63,7 @@ public class GameObject {
         return body;
     }
 
-   public void dispose (){
+    public void dispose (){
 
         texture.dispose();
    }
