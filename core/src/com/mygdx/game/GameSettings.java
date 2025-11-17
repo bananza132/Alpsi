@@ -26,4 +26,5 @@ public class GameSettings {
     public static final int ALP_FORCE_RATIO=10;
     public static final int STONE_VELOCITY=15;
     public static final long STARTING_STONE_APPEARANCE_COOL_DOWN=2000;
+
 }
