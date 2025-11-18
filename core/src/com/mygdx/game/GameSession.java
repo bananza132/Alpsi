@@ -3,21 +3,34 @@ package com.mygdx.game;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class GameSession {
-    long nextTrashSpawnTime;
+    public GameState state;
+    long nextStoneSpawnTime;
     long sessionStartTime;
+    long pauseStartTime;
 
     public GameSession() {
     }
 
     public void startGame() {
+        state = GameState.PLAYING;
         sessionStartTime = TimeUtils.millis();
-        nextTrashSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
+        nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
                 * getStonePeriodCoolDown());
     }
 
+    public void pauseGame() {
+        state = GameState.PAUSED;
+        pauseStartTime = TimeUtils.millis();
+    }
+
+    public void resumeGame() {
+        state = GameState.PLAYING;
+        sessionStartTime += TimeUtils.millis() - pauseStartTime;
+    }
+
     public boolean shouldSpawnStone() {
-        if (nextTrashSpawnTime <= TimeUtils.millis()) {
-            nextTrashSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
+        if (nextStoneSpawnTime <= TimeUtils.millis()) {
+            nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
                     * getStonePeriodCoolDown());
             return true;
         }

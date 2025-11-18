@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
@@ -49,7 +50,13 @@ public class GameObject {
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef(); // def - defenition (определение) это объект, который содержит все данные, необходимые для посторения тела
 
-        def.type = BodyDef.BodyType.DynamicBody; // тип тела, который имеет массу и может быть подвинут под действием сил
+        if (cBits == GameSettings.SMALL_STONE_BIT){
+            def.type = BodyDef.BodyType.KinematicBody;
+        }
+        else{
+            def.type = BodyDef.BodyType.DynamicBody;
+        }
+         // тип тела, который имеет массу и может быть подвинут под действием сил
         def.fixedRotation = true; // запрещаем телу вращаться вокруг своей оси
         Body body = world.createBody(def); // создаём в мире world объект по описанному нами определению
 
@@ -61,11 +68,19 @@ public class GameObject {
         fixtureDef.density = 0.1f; // устанавливаем плотность тела
         fixtureDef.friction = 1f; // устанвливаем коэффициент трения
         fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.isSensor = false;
         if(cBits==GameSettings.STONE_BIT){
             fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
         }
+        else if(cBits==GameSettings.ALP_BIT){
+            fixtureDef.filter.maskBits = GameSettings.STONE_BIT | GameSettings.SMALL_STONE_BIT | GameSettings.GROUND_BIT;
+        }
+        else if(cBits == GameSettings.SMALL_STONE_BIT){
+            fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
+        }
 
-        body.createFixture(fixtureDef); // создаём fixture по описанному нами определению
+        Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this);
         circleShape.dispose(); // так как коллайдер уже скопирован в fixutre, то circleShape может быть отчищена, чтобы не забивать оперативную память.
 
         body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0); // устанавливаем позицию тела по координатным осям и угол поворота

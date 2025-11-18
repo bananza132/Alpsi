@@ -19,5 +19,8 @@ public class GameResources {
     public  static  final String BUTTON_SHORT_BG_IMG_PATH="textures/button_background_short.png";
     public  static  final String BLACKOUT_MIDDLE_IMG_PATH="textures/blackout_middle.png";
     public static final String GROUND_IMG_PATH="textures/ground.png";
+    public static final String BLACKOUT_TOP_IMG_PATH="textures/blackout_top.png";
+    public static final String PAUSE_IMG_PATH="textures/pause_icon.png";
+    public static final String BLACKOUT_FULL_IMG_PATH="textures/blackout_full.png";
 
 }

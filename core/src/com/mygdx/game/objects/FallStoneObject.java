@@ -7,6 +7,7 @@ import com.mygdx.game.GameSettings;
 import java.util.Random;
 
 public class FallStoneObject extends GameObject {
+    int livesLeft;
     public FallStoneObject(int width, int height, String texturePath, World world) {
         super(
                 texturePath,
@@ -16,11 +17,20 @@ public class FallStoneObject extends GameObject {
                 world
         );
         body.setLinearVelocity(new Vector2(0, -GameSettings.STONE_VELOCITY));
+        livesLeft = 1;
     }
 
     public boolean isInFrame() {
         return getY() + height / 2 > 0;
     }
 
+    @Override
+    public void hit() {
+        livesLeft -= 1;
+    }
+
+    public boolean isAlive() {
+        return livesLeft > 0;
+    }
 
 }

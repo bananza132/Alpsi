@@ -22,13 +22,11 @@ public class ContactManager {
                 Fixture fixA = contact.getFixtureA();
                 Fixture fixB = contact.getFixtureB();
 
-                int cDef = fixA.getFilterData().categoryBits;
-                int cDef2 = fixB.getFilterData().categoryBits;
+                short cDef = fixA.getFilterData().categoryBits;
+                short cDef2 = fixB.getFilterData().categoryBits;
 
                 if (cDef == GameSettings.STONE_BIT && cDef2 == GameSettings.ALP_BIT
-                        || cDef2 == GameSettings.ALP_BIT && cDef == GameSettings.STONE_BIT
-                        || cDef == GameSettings.SMALL_STONE_BIT && cDef2 == GameSettings.ALP_BIT
-                        || cDef2 == GameSettings.ALP_BIT && cDef == GameSettings.SMALL_STONE_BIT) {
+                        || cDef == GameSettings.ALP_BIT && cDef2 == GameSettings.STONE_BIT) {
 
                     ((GameObject) fixA.getUserData()).hit();
                     ((GameObject) fixB.getUserData()).hit();

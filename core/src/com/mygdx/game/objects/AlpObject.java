@@ -1,5 +1,6 @@
 package com.mygdx.game.objects;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -7,47 +8,46 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
+import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSettings;
 
 public class AlpObject extends GameObject {
+    int livesLeft;
     public AlpObject(int x, int y, int width, int height, String texturePath, World world) {
         super(texturePath, x, y, width, height, GameSettings.ALP_BIT,world  );
-        body = createBody(x, y, world);
         body.setLinearDamping(10);
+        livesLeft = 3;
 
     }
 
     public void move(Vector3 vector3) {
         float fx = (vector3.x - getX()) * GameSettings.ALP_FORCE_RATIO;
         float fy = (vector3.y - getY()) * GameSettings.ALP_FORCE_RATIO;
+        if(vector3.x - getX() < 0){
+            texture = new Texture(GameResources.ALP_LEFT_IMG_PATH);
+        }
+        else{
+            texture = new Texture(GameResources.ALP_RIGHT_IMG_PATH);
+        }
         body.setLinearVelocity(
                 new Vector2(
-                        (vector3.x - getX()) / 10,
-                        (vector3.y - getY()) / 10
+                        (vector3.x - getX()),
+                        (vector3.y - getY())
                 )
         );
     }
 
-    private Body createBody(float x, float y, World world) {
-        BodyDef def = new BodyDef(); // def - defenition (определение) это объект, который содержит все данные, необходимые для посторения тела
+    public int getLiveLeft() {
+        return livesLeft;
+    }
 
-        def.type = BodyDef.BodyType.DynamicBody; // тип тела, который имеет массу и может быть подвинут под действием сил
-        def.fixedRotation = true; // запрещаем телу вращаться вокруг своей оси
-        Body body = world.createBody(def); // создаём в мире world объект по описанному нами определению
+    @Override
+    public void hit() {
+        livesLeft -= 1;
+        System.out.println(livesLeft);
+    }
 
-        CircleShape circleShape = new CircleShape(); // задаём коллайдер в форме круга
-        circleShape.setRadius(Math.max(width, height) * GameSettings.SCALE / 2f); // определяем радиус круга коллайдера
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circleShape; // устанавливаем коллайдер
-        fixtureDef.density = 0.1f; // устанавливаем плотность тела
-        fixtureDef.friction = 1f; // устанвливаем коэффициент трения
-        fixtureDef.filter.categoryBits = cBits;
-
-        body.createFixture(fixtureDef); // создаём fixture по описанному нами определению
-        circleShape.dispose(); // так как коллайдер уже скопирован в fixutre, то circleShape может быть отчищена, чтобы не забивать оперативную память.
-
-        body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0); // устанавливаем позицию тела по координатным осям и угол поворота
-        return body;
+    public boolean isAlive() {
+        return livesLeft > 0;
     }
 }
