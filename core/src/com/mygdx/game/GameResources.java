@@ -18,5 +18,6 @@ public class GameResources {
     public  static  final String BACKGROUND_MUSIC_SND="sounds/background_music.mp3";
     public  static  final String BUTTON_SHORT_BG_IMG_PATH="textures/button_background_short.png";
     public  static  final String BLACKOUT_MIDDLE_IMG_PATH="textures/blackout_middle.png";
+    public static final String GROUND_IMG_PATH="textures/ground.png";
 
 }

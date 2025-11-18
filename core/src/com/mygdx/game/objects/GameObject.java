@@ -13,12 +13,14 @@ public class GameObject {
     Texture texture;
     int width, height;
     public Body body;
-    GameObject(String texturePath, int x, int y, int width, int height, World world) {
+    public short cBits;
+    GameObject(String texturePath, int x, int y, int width, int height, short cBits, World world) {
         this.width = width;
         this.height = height;
+        this.cBits = cBits;
 
         texture = new Texture(texturePath);
-        body = createBody(x, y, world);
+        if(cBits != GameSettings.GROUND_BIT) body = createBody(x, y, world);
     }
 
     public void draw(SpriteBatch batch) {
@@ -41,6 +43,9 @@ public class GameObject {
         body.setTransform(body.getPosition().x, y * GameSettings.SCALE, 0);
     }
 
+    public void hit() {
+    }
+
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef(); // def - defenition (определение) это объект, который содержит все данные, необходимые для посторения тела
 
@@ -55,6 +60,10 @@ public class GameObject {
         fixtureDef.shape = circleShape; // устанавливаем коллайдер
         fixtureDef.density = 0.1f; // устанавливаем плотность тела
         fixtureDef.friction = 1f; // устанвливаем коэффициент трения
+        fixtureDef.filter.categoryBits = cBits;
+        if(cBits==GameSettings.STONE_BIT){
+            fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
+        }
 
         body.createFixture(fixtureDef); // создаём fixture по описанному нами определению
         circleShape.dispose(); // так как коллайдер уже скопирован в fixutre, то circleShape может быть отчищена, чтобы не забивать оперативную память.

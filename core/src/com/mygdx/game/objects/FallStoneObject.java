@@ -12,7 +12,7 @@ public class FallStoneObject extends GameObject {
                 texturePath,
                 width / 2 + (new Random()).nextInt((GameSettings.SCREEN_WIDTH - width)),
                 GameSettings.SCREEN_HEIGHT + height / 2,
-                width, height,
+                width, height, GameSettings.STONE_BIT,
                 world
         );
         body.setLinearVelocity(new Vector2(0, -GameSettings.STONE_VELOCITY));

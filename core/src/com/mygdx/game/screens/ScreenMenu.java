@@ -54,7 +54,16 @@ public class ScreenMenu extends ScreenAdapter {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
             if (startButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                for (int i = 0; i < 10; i++) {
+                    Gdx.input.isTouched(i);
+                }
+                try {
+                    Thread.sleep(200); // ~1 кадр
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 myGdxGame.setScreen(myGdxGame.screenGame);
+
             }
             if (exitButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                 Gdx.app.exit();

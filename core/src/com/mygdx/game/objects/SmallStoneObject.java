@@ -1,7 +1,5 @@
 package com.mygdx.game.objects;
 
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
@@ -9,29 +7,17 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
 
-public class AlpObject extends GameObject {
-    public AlpObject(int x, int y, int width, int height, String texturePath, World world) {
-        super(texturePath, x, y, width, height, GameSettings.ALP_BIT,world  );
+public class SmallStoneObject extends GameObject{
+    public SmallStoneObject(int x, int y, int width, int height, String texturePath, World world) {
+        super(texturePath, x, y, width, height, GameSettings.SMALL_STONE_BIT,world  );
         body = createBody(x, y, world);
         body.setLinearDamping(10);
-
-    }
-
-    public void move(Vector3 vector3) {
-        float fx = (vector3.x - getX()) * GameSettings.ALP_FORCE_RATIO;
-        float fy = (vector3.y - getY()) * GameSettings.ALP_FORCE_RATIO;
-        body.setLinearVelocity(
-                new Vector2(
-                        (vector3.x - getX()) / 10,
-                        (vector3.y - getY()) / 10
-                )
-        );
     }
 
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef(); // def - defenition (определение) это объект, который содержит все данные, необходимые для посторения тела
 
-        def.type = BodyDef.BodyType.DynamicBody; // тип тела, который имеет массу и может быть подвинут под действием сил
+        def.type = BodyDef.BodyType.KinematicBody; // тип тела, который имеет массу и может быть подвинут под действием сил
         def.fixedRotation = true; // запрещаем телу вращаться вокруг своей оси
         Body body = world.createBody(def); // создаём в мире world объект по описанному нами определению
 
@@ -43,6 +29,7 @@ public class AlpObject extends GameObject {
         fixtureDef.density = 0.1f; // устанавливаем плотность тела
         fixtureDef.friction = 1f; // устанвливаем коэффициент трения
         fixtureDef.filter.categoryBits = cBits;
+        fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
 
         body.createFixture(fixtureDef); // создаём fixture по описанному нами определению
         circleShape.dispose(); // так как коллайдер уже скопирован в fixutre, то circleShape может быть отчищена, чтобы не забивать оперативную память.

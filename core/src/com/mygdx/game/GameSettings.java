@@ -26,5 +26,11 @@ public class GameSettings {
     public static final int ALP_FORCE_RATIO=10;
     public static final int STONE_VELOCITY=15;
     public static final long STARTING_STONE_APPEARANCE_COOL_DOWN=2000;
+    public static final short AMOGUS_OBJECT_BIT = 1;
+    public static final short STONE_BIT = 2;
+    public static final short ALP_BIT = 4;
+    public static final short SMALL_STONE_BIT = 8;
+    public static final short GROUND_BIT = 16;
+
 
 }
