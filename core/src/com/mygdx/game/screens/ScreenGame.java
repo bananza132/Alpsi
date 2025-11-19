@@ -169,8 +169,10 @@ public class ScreenGame extends ScreenAdapter   {
                             flag = true;
                         }
                         alpObject.move(myGdxGame.touch);
+
                         if(!isGrabbing){
                             tryGrabStone(myGdxGame.touch, flag);
+                            mountainObject.move();
                         }
                         else{
                             releaseStone();
@@ -266,6 +268,7 @@ public class ScreenGame extends ScreenAdapter   {
         if (alpObject != null) {
             myGdxGame.world.destroyBody(alpObject.body);
         }
+        mountainObject=new MountainObject(0,0,GameSettings.MOUNTAIN_WIDTH,GameSettings.MOUNTAIN_HEIGHT,GameResources.MOUNTAINS_IMG_PATH);
 
         alpObject = new AlpObject(
                 GameSettings.SCREEN_WIDTH / 2, 150,
