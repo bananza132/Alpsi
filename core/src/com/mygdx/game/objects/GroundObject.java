@@ -3,7 +3,6 @@ package com.mygdx.game.objects;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
@@ -20,15 +19,13 @@ public class GroundObject extends GameObject{
 
         def.type = BodyDef.BodyType.StaticBody; // тип тела, который имеет массу и может быть подвинут под действием сил
         def.fixedRotation = true; // запрещаем телу вращаться вокруг своей оси
-        float centerX = (x + width / 2) * GameSettings.SCALE;
-        float centerY = (y + height / 2) * GameSettings.SCALE;
-        def.position.set(centerX, centerY);
+        def.position.set(x, y);
 
         Body body = world.createBody(def);
 
         PolygonShape polygonShape = new PolygonShape();
-        float halfWidth = (width / 2) * GameSettings.SCALE;
-        float halfHeight = (height / 2) * GameSettings.SCALE;
+        float halfWidth = (width / 2f) * GameSettings.SCALE;
+        float halfHeight = (height / 2f) * GameSettings.SCALE;
         polygonShape.setAsBox(halfWidth, halfHeight); // определяем радиус круга коллайдера
 
         FixtureDef fixtureDef = new FixtureDef();
@@ -46,6 +43,6 @@ public class GroundObject extends GameObject{
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, getX(), getY(), width, height);
+        batch.draw(texture, getX()-width/2f, getY(), width, height/2f);
     }
 }

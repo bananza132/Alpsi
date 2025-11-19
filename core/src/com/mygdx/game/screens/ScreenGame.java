@@ -3,6 +3,7 @@ package com.mygdx.game.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.mygdx.game.GameResources;
@@ -16,6 +17,7 @@ import com.mygdx.game.components.ImageView;
 import com.mygdx.game.components.LiveView;
 import com.mygdx.game.components.TextView;
 import com.mygdx.game.managers.ContactManager;
+import com.mygdx.game.managers.GrabManager;
 import com.mygdx.game.objects.AlpObject;
 import com.mygdx.game.objects.FallStoneObject;
 import com.mygdx.game.objects.GroundObject;
@@ -35,6 +37,9 @@ public class ScreenGame extends ScreenAdapter   {
     //SmallStoneObject smallStoneObject;
     GroundObject groundObject;
     ContactManager contactManager;
+    GrabManager grabManager;
+    private boolean isGrabbing = false;
+    private SmallStoneObject currentGrabbedStone;
     //Playing
     BackgroundView backgroundView;
     ImageView topBlackoutView;
@@ -57,7 +62,8 @@ public class ScreenGame extends ScreenAdapter   {
         gameSession = new GameSession();
         this.myGdxGame=myGdxGame;
         contactManager = new ContactManager(myGdxGame.world);
-       alpObject=new AlpObject(GameSettings.SCREEN_WIDTH/2,100,GameSettings.ALP_WIDTH,GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH,myGdxGame.world);
+        grabManager = new GrabManager(myGdxGame.world);
+       alpObject=new AlpObject(GameSettings.SCREEN_WIDTH/2,150,GameSettings.ALP_WIDTH,GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH,myGdxGame.world);
        mountainObject=new MountainObject(0,0,GameSettings.MOUNTAIN_WIDTH,GameSettings.MOUNTAIN_HEIGHT,GameResources.MOUNTAINS_IMG_PATH);
         stoneArray = new ArrayList<>();
         smallStoneArray = new ArrayList<>();
@@ -69,7 +75,7 @@ public class ScreenGame extends ScreenAdapter   {
                     GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
         }
-        //groundObject = new GroundObject(0, 0, 720, 50, GameResources.GROUND_IMG_PATH, myGdxGame.world);
+        groundObject = new GroundObject(GameSettings.SCREEN_WIDTH/2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
         backgroundView = new BackgroundView(GameResources.BACKGROUND_DEATH_IMG_PATH);
         topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
         liveView = new LiveView(305, 1215);
@@ -153,9 +159,22 @@ public class ScreenGame extends ScreenAdapter   {
                 if (pauseButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                     gameSession.pauseGame();
                 }
-                for(SmallStoneObject smallStone: smallStoneArray){
-                    if(smallStone.isTouched(myGdxGame.touch)){
+                for (SmallStoneObject smallStone : smallStoneArray) {
+                    if (smallStone.isTouched(myGdxGame.touch)) {
+                        boolean flag;
+                        if(myGdxGame.touch.x -alpObject.getX()<0){
+                            flag = false;
+                        }
+                        else{
+                            flag = true;
+                        }
                         alpObject.move(myGdxGame.touch);
+                        if(!isGrabbing){
+                            tryGrabStone(myGdxGame.touch, flag);
+                        }
+                        else{
+                            releaseStone();
+                        }
                     }
                 }
                 break;
@@ -183,7 +202,7 @@ public class ScreenGame extends ScreenAdapter   {
         myGdxGame.batch.begin();
         mountainObject.draw(myGdxGame.batch);
         for (FallStoneObject stone : stoneArray) stone.draw(myGdxGame.batch);
-        //groundObject.draw(myGdxGame.batch);
+        groundObject.draw(myGdxGame.batch);
         alpObject.draw(myGdxGame.batch);
         for(SmallStoneObject smallStone: smallStoneArray) smallStone.draw(myGdxGame.batch);
         topBlackoutView.draw(myGdxGame.batch);
@@ -204,7 +223,7 @@ public class ScreenGame extends ScreenAdapter   {
     public void dispose() {
         mountainObject.dispose();
         alpObject.dispose();
-        //groundObject.dispose();
+        groundObject.dispose();
         for(SmallStoneObject smallStone: smallStoneArray) smallStone.dispose();
         for (FallStoneObject stone: stoneArray) {
             stone.dispose();
@@ -255,6 +274,44 @@ public class ScreenGame extends ScreenAdapter   {
                 myGdxGame.world
         );
         gameSession.startGame();
+    }
+
+    private void tryGrabStone(Vector3 touchPos, boolean flag) {
+        for (SmallStoneObject smallStone : smallStoneArray) {
+            if (smallStone.isTouched(touchPos)) {
+                // Проверяем расстояние между Alp и камнем
+                Vector2 alpPos = new Vector2(alpObject.getX(), alpObject.getY());
+                Vector2 stonePos = new Vector2(smallStone.getX(), smallStone.getY());
+
+                float distance = alpPos.dst(stonePos);
+                float maxGrabDistance = 600f; // Максимальная дистанция захвата
+                Vector2 grabPoint;
+                if (distance <= maxGrabDistance) {
+                    if(!flag){
+                        grabPoint = new Vector2(smallStone.getX()-smallStone.getWidth()/2f,
+                                smallStone.getY()-smallStone.getHeight()/2f);
+                    }
+                    else{
+                        grabPoint = new Vector2(smallStone.getX()+smallStone.getWidth()/2f,
+                                smallStone.getY()+smallStone.getHeight()/2f);
+                    }
+
+
+                    // Создаем соединение
+                    grabManager.grab(alpObject.body, smallStone.body, grabPoint);
+
+                    isGrabbing = true;
+                    currentGrabbedStone = smallStone;
+                    return;
+                }
+            }
+        }
+    }
+
+    private void releaseStone() {
+        grabManager.release();
+        isGrabbing = false;
+        currentGrabbedStone = null;
     }
 
 
