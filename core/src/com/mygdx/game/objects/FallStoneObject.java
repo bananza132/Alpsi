@@ -8,6 +8,9 @@ import java.util.Random;
 
 public class FallStoneObject extends GameObject {
     int livesLeft;
+    private boolean isFrozen = false;
+    private Vector2 frozenVelocity = new Vector2();
+    private float frozenAngularVelocity = 0;
     public FallStoneObject(int width, int height, String texturePath, World world) {
         super(
                 texturePath,
@@ -18,6 +21,22 @@ public class FallStoneObject extends GameObject {
         );
         body.setLinearVelocity(new Vector2(0, -GameSettings.STONE_VELOCITY));
         livesLeft = 1;
+    }
+    public void freeze() {
+        if (body != null && !isFrozen) {
+            frozenVelocity.set(body.getLinearVelocity());
+            frozenAngularVelocity = body.getAngularVelocity();
+            isFrozen = true;
+        }
+    }
+
+    public void unfreeze() {
+        if (body != null && isFrozen) {
+            body.setLinearVelocity(frozenVelocity);
+            body.setAngularVelocity(frozenAngularVelocity);
+
+            isFrozen = false;
+        }
     }
 
     public boolean isInFrame() {

@@ -32,6 +32,9 @@ public class ScreenGame extends ScreenAdapter   {
     GameSession gameSession;
     AlpObject alpObject;
     MountainObject mountainObject;
+    private boolean hasMountainMoved = false;
+    private boolean touchProcessed = false;
+    private Vector3 lastTouch = new Vector3();
     ArrayList<FallStoneObject> stoneArray;
     ArrayList<SmallStoneObject> smallStoneArray;
     //SmallStoneObject smallStoneObject;
@@ -45,11 +48,11 @@ public class ScreenGame extends ScreenAdapter   {
     ImageView topBlackoutView;
     LiveView liveView;
     //TextView scoreTextView;
-    ButtonView pauseButton;
+    ButtonView inventoryButton;
 
     // PAUSED state UI
     ImageView fullBlackoutView;
-    TextView pauseTextView;
+    TextView inventoryTextView;
     ButtonView homeButton;
     ButtonView continueButton;
 
@@ -80,23 +83,23 @@ public class ScreenGame extends ScreenAdapter   {
         topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
         liveView = new LiveView(305, 1215);
         //scoreTextView = new TextView(myGdxGame.commonWhiteFont, 50, 1215);
-        pauseButton = new ButtonView(
-                605, 1200,
-                46, 54,
-                GameResources.PAUSE_IMG_PATH
+        inventoryButton = new ButtonView(
+                605, 1185,
+                80, 80,
+                GameResources.INVENTORY_IMG_PATH
         );
 
         fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_IMG_PATH);
-        pauseTextView = new TextView(myGdxGame.largeWhiteFont, 282, 842, "Pause");
+        inventoryTextView = new TextView(myGdxGame.largeWhiteFont, 150, 1200, "Inventory/pause");
         homeButton = new ButtonView(
-                138, 695,
+                138, 100,
                 200, 70,
                 myGdxGame.commonBlackFont,
                 GameResources.BUTTON_SHORT_BG_IMG_PATH,
                 "Home"
         );
         continueButton = new ButtonView(
-                393, 695,
+                393, 100,
                 200, 70,
                 myGdxGame.commonBlackFont,
                 GameResources.BUTTON_SHORT_BG_IMG_PATH,
@@ -154,49 +157,66 @@ public class ScreenGame extends ScreenAdapter   {
     }
 
     private void handleInput() {
-        if (Gdx.input.isTouched()) myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        switch (gameSession.state) {
-            case PLAYING:
-                if (pauseButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    gameSession.pauseGame();
-                }
-                for (SmallStoneObject smallStone : smallStoneArray) {
-                    if (smallStone.isTouched(myGdxGame.touch)) {
-                        boolean flag;
-                        if(myGdxGame.touch.x -alpObject.getX()<0){
-                            flag = false;
-                        }
-                        else{
-                            flag = true;
-                        }
-                        alpObject.move(myGdxGame.touch);
+        if (Gdx.input.justTouched()) {
+            myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
+            touchProcessed = false; // Сбрасываем флаг при новом касании
+            lastTouch.set(myGdxGame.touch);
+        }
 
-                        if(!isGrabbing){
-                            tryGrabStone(myGdxGame.touch, flag);
+        // Если касание еще не обработано, обрабатываем его
+        if (!touchProcessed ) {
+            switch (gameSession.state) {
+                case PLAYING:
+                    if (inventoryButton.isHit(lastTouch.x, lastTouch.y)) {
+                        gameSession.pauseGame();
+                        touchProcessed = true;
+                        break;
+                    }
 
-                        }
-                        else{
-                            releaseStone();
-                            if (!mountainObject.isMoving()) {
-                                mountainObject.startMoving();
+                    for (SmallStoneObject smallStone : smallStoneArray) {
+                        if (smallStone.isTouched(lastTouch)) {
+                            boolean flag = lastTouch.x - alpObject.getX() >= 0;
+                            alpObject.move(lastTouch);
+
+                            if (!isGrabbing) {
+                                tryGrabStone(lastTouch, flag);
+                                if (!mountainObject.isMoving()) {
+                                    mountainObject.startMoving();
+                                }
+                            } else {
+                                releaseStone();
                             }
+                            touchProcessed = true;
+                            break;
                         }
                     }
-                }
-                break;
-            case PAUSED:
-                if (continueButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    gameSession.resumeGame();
-                }
-                if (homeButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    myGdxGame.setScreen(myGdxGame.screenMenu);
-                }
-                break;
-            case ENDED:
-                if (homeButton2.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                    myGdxGame.setScreen(myGdxGame.screenMenu);
-                }
-                break;
+                    break;
+
+                case PAUSED:
+                    alpObject.freeze();
+                    for(FallStoneObject stone:  stoneArray){
+                        stone.freeze();
+                    }
+                    if (continueButton.isHit(lastTouch.x, lastTouch.y)) {
+                        gameSession.resumeGame();
+                        alpObject.unfreeze();
+                        for(FallStoneObject stone:  stoneArray){
+                            stone.unfreeze();
+                        }
+                        touchProcessed = true;
+                    } else if (homeButton.isHit(lastTouch.x, lastTouch.y)) {
+                        myGdxGame.setScreen(myGdxGame.screenMenu);
+                        touchProcessed = true;
+                    }
+                    break;
+
+                case ENDED:
+                    if (homeButton2.isHit(lastTouch.x, lastTouch.y)) {
+                        myGdxGame.setScreen(myGdxGame.screenMenu);
+                        touchProcessed = true;
+                    }
+                    break;
+            }
         }
     }
 
@@ -213,10 +233,10 @@ public class ScreenGame extends ScreenAdapter   {
         for(SmallStoneObject smallStone: smallStoneArray) smallStone.draw(myGdxGame.batch);
         topBlackoutView.draw(myGdxGame.batch);
         liveView.draw(myGdxGame.batch);
-        pauseButton.draw(myGdxGame.batch);
+        inventoryButton.draw(myGdxGame.batch);
         if (gameSession.state == GameState.PAUSED) {
             fullBlackoutView.draw(myGdxGame.batch);
-            pauseTextView.draw(myGdxGame.batch);
+            inventoryTextView.draw(myGdxGame.batch);
             homeButton.draw(myGdxGame.batch);
             continueButton.draw(myGdxGame.batch);
         } else if (gameSession.state == GameState.ENDED) {
@@ -236,9 +256,9 @@ public class ScreenGame extends ScreenAdapter   {
         }
         topBlackoutView.dispose();
         liveView.dispose();
-        pauseButton.dispose();
+        inventoryButton.dispose();
         fullBlackoutView.dispose();
-        pauseTextView.dispose();
+        inventoryTextView.dispose();
         homeButton.dispose();
         homeButton2.dispose();
         continueButton.dispose();

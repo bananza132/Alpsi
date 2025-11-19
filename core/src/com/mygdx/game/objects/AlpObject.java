@@ -11,11 +11,30 @@ public class AlpObject extends GameObject {
     int livesLeft;
     private boolean isMovingToStone = false;
     private SmallStoneObject targetStone;
+    private boolean isFrozen = false;
+    private Vector2 frozenVelocity = new Vector2();
+    private float frozenAngularVelocity = 0;
     public AlpObject(int x, int y, int width, int height, String texturePath, World world) {
         super(texturePath, x, y, width, height, GameSettings.ALP_BIT,world  );
         body.setLinearDamping(10);
         livesLeft = 3;
 
+    }
+    public void freeze() {
+        if (body != null && !isFrozen) {
+            frozenVelocity.set(body.getLinearVelocity());
+            frozenAngularVelocity = body.getAngularVelocity();
+            isFrozen = true;
+        }
+    }
+
+    public void unfreeze() {
+        if (body != null && isFrozen) {
+            body.setLinearVelocity(frozenVelocity);
+            body.setAngularVelocity(frozenAngularVelocity);
+
+            isFrozen = false;
+        }
     }
 
     public void move(Vector3 vector3) {

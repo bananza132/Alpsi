@@ -19,7 +19,7 @@ public class MountainObject  {
     int speed=5;
     boolean isMoving = false;
     int moveDistance = 0;
-    int maxMoveDistance = 3;
+    int maxMoveDistance =100;
    public MountainObject(int x, int y, int width, int height, String texturePath) {
      texture=new Texture(texturePath);
      texture1Y=0;
