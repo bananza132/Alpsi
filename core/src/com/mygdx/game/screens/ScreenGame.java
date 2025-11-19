@@ -130,6 +130,7 @@ public class ScreenGame extends ScreenAdapter   {
     public void render(float delta) {
         myGdxGame.stepWorld();
         handleInput();
+        mountainObject.move();
         if (gameSession.state == GameState.PLAYING) {
             if (gameSession.shouldSpawnStone()) {
                 FallStoneObject stoneObject = new FallStoneObject(
@@ -172,10 +173,13 @@ public class ScreenGame extends ScreenAdapter   {
 
                         if(!isGrabbing){
                             tryGrabStone(myGdxGame.touch, flag);
-                            mountainObject.move();
+
                         }
                         else{
                             releaseStone();
+                            if (!mountainObject.isMoving()) {
+                                mountainObject.startMoving();
+                            }
                         }
                     }
                 }

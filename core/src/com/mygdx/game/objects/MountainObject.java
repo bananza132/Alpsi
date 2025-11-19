@@ -17,6 +17,9 @@ public class MountainObject  {
     TextureRegion[] textureRegions;
     TextureRegion texture1,texture2;
     int speed=5;
+    boolean isMoving = false;
+    int moveDistance = 0;
+    int maxMoveDistance = 3;
    public MountainObject(int x, int y, int width, int height, String texturePath) {
      texture=new Texture(texturePath);
      texture1Y=0;
@@ -37,8 +40,15 @@ public class MountainObject  {
 
 
     public void move() {
-texture1Y-=speed;
-texture2Y-=speed;
+        if (!isMoving) return;
+
+        texture1Y -= speed;
+        texture2Y -= speed;
+        moveDistance += speed;
+
+        if (moveDistance >= maxMoveDistance) {
+            stopMoving(); // Останавливаем движение
+        }
         if (texture1Y <= -GameSettings.SCREEN_WIDTH) {
             texture1Y= GameSettings.SCREEN_WIDTH;
             int randomIndex=new Random().nextInt(3);
@@ -49,6 +59,18 @@ texture2Y-=speed;
           int  randomIndex=new Random().nextInt(3);
             texture2=textureRegions[randomIndex];
         }
+    }
+    public void startMoving() {
+        isMoving = true;
+        moveDistance = 0;
+    }
+
+    public void stopMoving() {
+        isMoving = false;
+        moveDistance = 0;
+    }
+    public boolean isMoving() {
+        return isMoving;
     }
 
     public void draw(SpriteBatch batch) {
