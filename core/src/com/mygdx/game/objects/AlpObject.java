@@ -74,4 +74,11 @@ public class AlpObject extends GameObject {
     public boolean isAlive() {
         return livesLeft > 0;
     }
+    public int getWidth(){
+        return width;
+    }
+
+    public int getHeight(){
+        return height;
+    }
 }

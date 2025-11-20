@@ -15,7 +15,7 @@ public class GrabManager {
         this.world = world;
     }
 
-    public void grab(Body dynamicBody, Body kinematicBody, Vector2 grabPoint) {
+    public void grab(Body dynamicBody, Body kinematicBody, Vector2 grabPoint,Vector2 alpPoint) {
         if (grabJoint != null) {
             release();
         }
@@ -26,7 +26,7 @@ public class GrabManager {
         jointDef.collideConnected = false; // Тела не сталкиваются друг с другом
 
         // Точка захвата в локальных координатах каждого тела
-        jointDef.localAnchorA.set(dynamicBody.getLocalPoint(grabPoint));
+        jointDef.localAnchorA.set(dynamicBody.getLocalPoint(alpPoint));
         jointDef.localAnchorB.set(kinematicBody.getLocalPoint(grabPoint));
 
         // Ограничиваем угол вращения для более стабильного захвата

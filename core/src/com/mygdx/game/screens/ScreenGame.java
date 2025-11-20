@@ -354,18 +354,21 @@ public class ScreenGame extends ScreenAdapter   {
                 System.out.println(distance);
                     float maxGrabDistance = 600f; // Максимальная дистанция захвата
                     Vector2 grabPoint;
+                Vector2 alpPoint;
                         if(!flag){
-                            grabPoint = new Vector2(smallStone.getX()-smallStone.getWidth()/2f,
+                            grabPoint = new Vector2(smallStone.getX()+smallStone.getWidth()/2f,
                                     smallStone.getY()-smallStone.getHeight()/2f);
+                            alpPoint=new Vector2(alpObject.getX()-alpObject.getWidth()/2f,alpObject.getY()+alpObject.getHeight()/2f);
                         }
                         else{
-                            grabPoint = new Vector2(smallStone.getX()+smallStone.getWidth()/2f,
-                                    smallStone.getY()+smallStone.getHeight()/2f);
+                            grabPoint = new Vector2(smallStone.getX()-smallStone.getWidth()/2f,
+                                    smallStone.getY()-smallStone.getHeight()/2f);
+                            alpPoint=new Vector2(alpObject.getX()+alpObject.getWidth()/2f,alpObject.getY()+alpObject.getHeight()/2f);
                         }
 
 
                         // Создаем соединение
-                        grabManager.grab(alpObject.body, smallStone.body, grabPoint);
+                        grabManager.grab(alpObject.body, smallStone.body, grabPoint,alpPoint);
                         System.out.println("Grabbed");
 
                         isGrabbing = true;
