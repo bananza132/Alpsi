@@ -42,6 +42,10 @@ public class ScreenGame extends ScreenAdapter   {
     ContactManager contactManager;
     GrabManager grabManager;
     private boolean isGrabbing = false;
+    private boolean waitingForGrab = false;
+    private SmallStoneObject targetStone;
+    private boolean targetIsRightSide;
+    private Vector3 targetTouchPos;
     private SmallStoneObject currentGrabbedStone;
     //Playing
     BackgroundView backgroundView;
@@ -133,6 +137,9 @@ public class ScreenGame extends ScreenAdapter   {
     public void render(float delta) {
         myGdxGame.stepWorld();
         handleInput();
+        if (waitingForGrab && !isGrabbing) {
+            checkAndGrab();
+        }
         mountainObject.move();
         if (gameSession.state == GameState.PLAYING) {
             if (gameSession.shouldSpawnStone()) {
@@ -173,46 +180,57 @@ public class ScreenGame extends ScreenAdapter   {
 
                     for (SmallStoneObject smallStone : smallStoneArray) {
                         if (smallStone.isTouched(myGdxGame.touch)) {
+
                             // Определяем сторону относительно альпиниста
                             boolean isRightSide = myGdxGame.touch.x >= alpObject.getX();
-
-                            // Двигаем альпиниста
-                            alpObject.move(myGdxGame.touch);
-
-                            if (!isGrabbing) {
-                                tryGrabStone(myGdxGame.touch, isRightSide);
-                                // Движение горы при захвате
+                            if (!isGrabbing && !waitingForGrab) {
+                                // ПЕРВОЕ нажатие - начинаем движение к камню
+                                alpObject.move(myGdxGame.touch);
                                 mountainObject.startMoving();
+
+                                // Сохраняем цель для последующего захвата
+                                waitingForGrab = true;
+                                targetStone = smallStone;
+                                targetIsRightSide = isRightSide;
+                                targetTouchPos = new Vector3(myGdxGame.touch);
                             } else {
                                 releaseStone();
+                                //smallStone.body.setActive(false);
+                                if (!isGrabbing && !waitingForGrab) {
+                                    // ПЕРВОЕ нажатие - начинаем движение к камню
+                                    alpObject.move(myGdxGame.touch);
+                                    mountainObject.startMoving();
+
+                                    // Сохраняем цель для последующего захвата
+                                    waitingForGrab = true;
+                                    targetStone = smallStone;
+                                    targetIsRightSide = isRightSide;
+                                    targetTouchPos = new Vector3(myGdxGame.touch);
+                                }
                             }
+
+                            // Двигаем альпиниста
+
                             break;
                         }
                     }
                     break;
 
                 case PAUSED:
-                    alpObject.freeze();
-                    for(FallStoneObject stone:  stoneArray){
-                        stone.freeze();
-                    }
-                    if (continueButton.isHit(lastTouch.x, lastTouch.y)) {
+                    if (continueButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                         gameSession.resumeGame();
                         alpObject.unfreeze();
                         for(FallStoneObject stone:  stoneArray){
                             stone.unfreeze();
                         }
-                        touchProcessed = true;
-                    } else if (homeButton.isHit(lastTouch.x, lastTouch.y)) {
+                    } else if (homeButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                         myGdxGame.setScreen(myGdxGame.screenMenu);
-                        touchProcessed = true;
                     }
                     break;
 
                 case ENDED:
-                    if (homeButton2.isHit(lastTouch.x, lastTouch.y)) {
+                    if (homeButton2.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                         myGdxGame.setScreen(myGdxGame.screenMenu);
-                        touchProcessed = true;
                     }
                     break;
             }
@@ -302,7 +320,30 @@ public class ScreenGame extends ScreenAdapter   {
         gameSession.startGame();
     }
 
+    private void checkAndGrab() {
+        if (targetStone == null) return;
+
+        Vector2 alpPos = new Vector2(alpObject.getX(), alpObject.getY());
+        Vector2 stonePos = new Vector2(targetStone.getX(), targetStone.getY());
+        float distance = alpPos.dst(stonePos);
+
+        System.out.println("Distance to stone: " + distance);
+
+        // Если альпинист достаточно близко к камню - выполняем захват
+        if (distance <= 200f) { // Уменьшите это значение по необходимости
+            tryGrabStone(targetTouchPos, targetIsRightSide);
+            waitingForGrab = false;
+            targetStone = null;
+        }
+
+        if (!alpObject.isMoving() && distance > 50f) {
+            waitingForGrab = false;
+            targetStone = null;
+        }
+    }
+
     private void tryGrabStone(Vector3 touchPos, boolean flag) {
+
         for (SmallStoneObject smallStone : smallStoneArray) {
             if (smallStone.isTouched(touchPos)) {
                 // Проверяем расстояние между Alp и камнем
@@ -310,32 +351,35 @@ public class ScreenGame extends ScreenAdapter   {
                 Vector2 stonePos = new Vector2(smallStone.getX(), smallStone.getY());
 
                 float distance = alpPos.dst(stonePos);
-                float maxGrabDistance = 600f; // Максимальная дистанция захвата
-                Vector2 grabPoint;
-                if (distance <= maxGrabDistance) {
-                    if(!flag){
-                        grabPoint = new Vector2(smallStone.getX()-smallStone.getWidth()/2f,
-                                smallStone.getY()-smallStone.getHeight()/2f);
-                    }
-                    else{
-                        grabPoint = new Vector2(smallStone.getX()+smallStone.getWidth()/2f,
-                                smallStone.getY()+smallStone.getHeight()/2f);
-                    }
+                System.out.println(distance);
+                    float maxGrabDistance = 600f; // Максимальная дистанция захвата
+                    Vector2 grabPoint;
+                        if(!flag){
+                            grabPoint = new Vector2(smallStone.getX()-smallStone.getWidth()/2f,
+                                    smallStone.getY()-smallStone.getHeight()/2f);
+                        }
+                        else{
+                            grabPoint = new Vector2(smallStone.getX()+smallStone.getWidth()/2f,
+                                    smallStone.getY()+smallStone.getHeight()/2f);
+                        }
 
 
-                    // Создаем соединение
-                    grabManager.grab(alpObject.body, smallStone.body, grabPoint);
+                        // Создаем соединение
+                        grabManager.grab(alpObject.body, smallStone.body, grabPoint);
+                        System.out.println("Grabbed");
 
-                    isGrabbing = true;
-                    currentGrabbedStone = smallStone;
-                    return;
-                }
+                        isGrabbing = true;
+                        currentGrabbedStone = smallStone;
+                        return;
+
+
             }
         }
     }
 
     private void releaseStone() {
         grabManager.release();
+        System.out.println("Released");
         isGrabbing = false;
         currentGrabbedStone = null;
     }

@@ -49,10 +49,15 @@ public class AlpObject extends GameObject {
         }
         body.setLinearVelocity(
                 new Vector2(
-                        (vector3.x - getX()),
-                        (vector3.y - getY())
+                        (vector3.x - getX())*200,
+                        (vector3.y - getY())*200
                 )
         );
+    }
+
+    public boolean isMoving() {
+        if (body == null) return false;
+        return body.getLinearVelocity().len() > 0.1f;
     }
 
 
