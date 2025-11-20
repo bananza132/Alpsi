@@ -195,11 +195,12 @@ public class ScreenGame extends ScreenAdapter   {
                                 targetTouchPos = new Vector3(myGdxGame.touch);
                             } else {
                                 releaseStone();
-                                //smallStone.body.setActive(false);
+                                smallStone.body.setActive(false);
                                 if (!isGrabbing && !waitingForGrab) {
                                     // ПЕРВОЕ нажатие - начинаем движение к камню
                                     alpObject.move(myGdxGame.touch);
                                     mountainObject.startMoving();
+                                    groundObject.move();
 
                                     // Сохраняем цель для последующего захвата
                                     waitingForGrab = true;
