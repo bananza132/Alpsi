@@ -54,10 +54,14 @@ public class GameObject {
         if (cBits == GameSettings.SMALL_STONE_BIT){
             def.type = BodyDef.BodyType.KinematicBody;
             def.fixedRotation = true;
+            float[] verts = {-59, 100, -92, 0, -92, -16, -59, -50, 58, -50, 92, -16, 92, 16, 58, 100};
+            for (int i = 0; i < verts.length; i++) {
+                verts[i] *= GameSettings.SCALE;
+            }
             Body body = world.createBody(def);
 
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(width*GameSettings.SCALE/2, height*GameSettings.SCALE/2);
+            shape.set(verts);
 
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = shape;
@@ -86,9 +90,13 @@ public class GameObject {
             def.type = BodyDef.BodyType.KinematicBody;
             def.type = BodyDef.BodyType.DynamicBody;
             def.fixedRotation = true;
+            float[] verts = {-109, 66, -43, -150, 40, -150, 109, 66, 6, 150, -9, 150};
+            for (int i = 0; i < verts.length; i++) {
+                verts[i] *= GameSettings.SCALE;
+            }
             Body body = world.createBody(def);
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(GameSettings.ALP_WIDTH*GameSettings.SCALE/2, GameSettings.ALP_HEIGHT*GameSettings.SCALE/2);
+            shape.set(verts);
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = shape;
             fixtureDef.density = 0.1f;
