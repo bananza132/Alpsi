@@ -159,34 +159,33 @@ public class ScreenGame extends ScreenAdapter   {
     private void handleInput() {
         if (Gdx.input.justTouched()) {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-            touchProcessed = false; // Сбрасываем флаг при новом касании
-            lastTouch.set(myGdxGame.touch);
-        }
 
-        // Если касание еще не обработано, обрабатываем его
-        if (!touchProcessed ) {
             switch (gameSession.state) {
                 case PLAYING:
-                    if (inventoryButton.isHit(lastTouch.x, lastTouch.y)) {
+                    if (inventoryButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                         gameSession.pauseGame();
-                        touchProcessed = true;
+                        alpObject.freeze();
+                        for(FallStoneObject stoneObject:stoneArray){
+                            stoneObject.freeze();
+                        }
                         break;
                     }
 
                     for (SmallStoneObject smallStone : smallStoneArray) {
-                        if (smallStone.isTouched(lastTouch)) {
-                            boolean flag = lastTouch.x - alpObject.getX() >= 0;
-                            alpObject.move(lastTouch);
+                        if (smallStone.isTouched(myGdxGame.touch)) {
+                            // Определяем сторону относительно альпиниста
+                            boolean isRightSide = myGdxGame.touch.x >= alpObject.getX();
+
+                            // Двигаем альпиниста
+                            alpObject.move(myGdxGame.touch);
 
                             if (!isGrabbing) {
-                                tryGrabStone(lastTouch, flag);
-                                if (!mountainObject.isMoving()) {
-                                    mountainObject.startMoving();
-                                }
+                                tryGrabStone(myGdxGame.touch, isRightSide);
+                                // Движение горы при захвате
+                                mountainObject.startMoving();
                             } else {
                                 releaseStone();
                             }
-                            touchProcessed = true;
                             break;
                         }
                     }

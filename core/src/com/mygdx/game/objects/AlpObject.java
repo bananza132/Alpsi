@@ -3,6 +3,7 @@ package com.mygdx.game.objects;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSettings;
@@ -24,12 +25,14 @@ public class AlpObject extends GameObject {
         if (body != null && !isFrozen) {
             frozenVelocity.set(body.getLinearVelocity());
             frozenAngularVelocity = body.getAngularVelocity();
+            body.setType(BodyDef.BodyType.StaticBody);
             isFrozen = true;
         }
     }
 
     public void unfreeze() {
         if (body != null && isFrozen) {
+            body.setType(BodyDef.BodyType.DynamicBody);
             body.setLinearVelocity(frozenVelocity);
             body.setAngularVelocity(frozenAngularVelocity);
 
