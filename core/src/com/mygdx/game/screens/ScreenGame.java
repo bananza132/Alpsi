@@ -33,6 +33,7 @@ public class ScreenGame extends ScreenAdapter   {
     AlpObject alpObject;
     MountainObject mountainObject;
     private boolean hasMountainMoved = false;
+    private boolean movementTriggered = false;
     private boolean touchProcessed = false;
     private Vector3 lastTouch = new Vector3();
     ArrayList<FallStoneObject> stoneArray;
@@ -154,22 +155,14 @@ public class ScreenGame extends ScreenAdapter   {
                 gameSession.state = GameState.ENDED;          }
             liveView.setLeftLives(alpObject.getLiveLeft());
         }
-        if (alpObject.isMoving()) {
-            float drop = 1; // пикселей на кадр — подбирайте
-            for (SmallStoneObject s : smallStoneArray) {
-                if (s.body != null) {
-                    float nx = s.body.getPosition().x;
-                    float ny = s.body.getPosition().y - drop * GameSettings.SCALE;
-                    s.body.setTransform(nx, ny, s.body.getAngle());
-                }
-            }
-            // Горка стартует
-            mountainObject.startMoving();
-            // при первом подъёме уводим землю вниз
-            if (!hasMountainMoved) {
-                groundObject.move();
-                hasMountainMoved = true;
-            }
+        if (isGrabbing && !movementTriggered) {
+            moveEnvironmentOnce();
+            movementTriggered = true;
+        }
+
+        // Сбрасываем флаг при отпускании камня
+        if (!isGrabbing && movementTriggered) {
+            movementTriggered = false;
         }
 
 
@@ -179,6 +172,28 @@ public class ScreenGame extends ScreenAdapter   {
         draw();
 
     }
+
+    private void moveEnvironmentOnce() {
+        // Двигаем маленькие камни вниз на фиксированное расстояние
+        float dropDistance = 100f; // Фиксированное расстояние для движения в пикселях
+        for (SmallStoneObject s : smallStoneArray) {// Не двигаем захваченный камень
+                float nx = s.body.getPosition().x;
+                float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
+                s.body.setTransform(nx, ny, s.body.getAngle());
+        }
+
+        // Двигаем гору на фиксированное расстояние
+        mountainObject.move();
+
+        // При первом захвате уводим землю вниз
+        if (!hasMountainMoved) {
+            groundObject.move();
+            hasMountainMoved = true;
+        }
+
+        System.out.println("Environment moved for grab action");
+    }
+
 
     private void handleInput() {
         if (Gdx.input.justTouched()) {
@@ -349,13 +364,13 @@ public class ScreenGame extends ScreenAdapter   {
         System.out.println("Distance to stone: " + distance);
 
         // Если альпинист достаточно близко к камню - выполняем захват
-        if (distance <= 20f) { // Уменьшите это значение по необходимости
+        if (distance <= 200f) { // Уменьшите это значение по необходимости
             tryGrabStone(targetTouchPos, targetIsRightSide);
             waitingForGrab = false;
             targetStone = null;
         }
 
-        /*if (!alpObject.isMoving() && distance > 50f) {
+        /*if (distance > 50f) {
             waitingForGrab = false;
             targetStone = null;
         }*/
@@ -364,7 +379,7 @@ public class ScreenGame extends ScreenAdapter   {
     private void tryGrabStone(Vector3 touchPos, boolean flag) {
 
         for (SmallStoneObject smallStone : smallStoneArray) {
-            if (smallStone.isTouched(touchPos)) {
+            if (smallStone == targetStone) {
                 float grabXpix, grabYpix;
                 if (!flag) {
                     // альпинист слева — берем правый край камня
@@ -398,6 +413,7 @@ public class ScreenGame extends ScreenAdapter   {
         System.out.println("Released");
         isGrabbing = false;
         currentGrabbedStone = null;
+        movementTriggered = false;
     }
 
 
