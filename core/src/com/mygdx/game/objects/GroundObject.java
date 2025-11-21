@@ -20,8 +20,6 @@ public class GroundObject extends GameObject{
 
         def.type = BodyDef.BodyType.StaticBody; // тип тела, который имеет массу и может быть подвинут под действием сил
         def.fixedRotation = true; // запрещаем телу вращаться вокруг своей оси
-        def.position.set(x, y);
-
         Body body = world.createBody(def);
 
         PolygonShape polygonShape = new PolygonShape();
@@ -54,6 +52,6 @@ public class GroundObject extends GameObject{
         isMoving = false;
     }
     public void  move(){
-        body.setTransform(GameSettings.SCREEN_WIDTH/2f,-height/2f,0);
+        body.setTransform(body.getPosition().x,-height * GameSettings.SCALE,0);
     }
 }

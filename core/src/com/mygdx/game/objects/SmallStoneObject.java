@@ -11,8 +11,8 @@ public class SmallStoneObject extends GameObject{
     }
 
     public boolean isTouched(Vector3 vector3) {
-        if (vector3.x >= getX()-width/2 && vector3.x <= getX()+width/2 && vector3.y >= getY()-height/2 &&
-                vector3.y <= getY() + height/2){
+        if (vector3.x >= getX()-width/2f && vector3.x <= getX()+width/2f && vector3.y >= getY()-height/2f &&
+                vector3.y <= getY() + height/2f){
             return true;
         }
         return false;

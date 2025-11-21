@@ -15,8 +15,12 @@ public class AlpObject extends GameObject {
     private boolean isFrozen = false;
     private Vector2 frozenVelocity = new Vector2();
     private float frozenAngularVelocity = 0;
+    private Texture leftTexture;
+    private Texture rightTexture;
     public AlpObject(int x, int y, int width, int height, String texturePath, World world) {
         super(texturePath, x, y, width, height, GameSettings.ALP_BIT,world  );
+        leftTexture = new Texture(GameResources.ALP_LEFT_IMG_PATH);
+        rightTexture = new Texture(GameResources.ALP_RIGHT_IMG_PATH);
         body.setLinearDamping(10);
         livesLeft = 3;
 
@@ -40,24 +44,29 @@ public class AlpObject extends GameObject {
         }
     }
 
-    public void move(Vector3 vector3) {
-        // Меняем текстуру в зависимости от направления
-        if (vector3.x - getX() < 0) {
-            texture = new Texture(GameResources.ALP_LEFT_IMG_PATH);
+    public void move(Vector3 target) {
+        if (target.x - getX() < 0) {
+            texture = leftTexture;
         } else {
-            texture = new Texture(GameResources.ALP_RIGHT_IMG_PATH);
+            texture = rightTexture;
         }
-        body.setLinearVelocity(
-                new Vector2(
-                        (vector3.x - getX())*200,
-                        (vector3.y - getY())*200
-                )
-        );
+
+        Vector2 targetMeters = new Vector2(target.x * GameSettings.SCALE, target.y * GameSettings.SCALE);
+        Vector2 alpPosMeters = body.getPosition();
+        Vector2 dir = targetMeters.cpy().sub(alpPosMeters);
+        float distance = dir.len();
+        if (distance < 5f) {
+            body.setLinearVelocity(0, 0);
+            return;
+        }
+        dir.nor();
+        float speed = 100f;
+        body.setLinearVelocity(dir.scl(speed));
     }
 
     public boolean isMoving() {
         if (body == null) return false;
-        return body.getLinearVelocity().len() > 0.1f;
+        return body.getLinearVelocity().len() > 0.01f;
     }
 
 
@@ -68,7 +77,6 @@ public class AlpObject extends GameObject {
     @Override
     public void hit() {
         livesLeft -= 1;
-        System.out.println(livesLeft);
     }
 
     public boolean isAlive() {
@@ -80,5 +88,11 @@ public class AlpObject extends GameObject {
 
     public int getHeight(){
         return height;
+    }
+    @Override
+    public void dispose() {
+        super.dispose();
+        leftTexture.dispose();
+        rightTexture.dispose();
     }
 }

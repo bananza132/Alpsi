@@ -29,19 +29,18 @@ public class GameObject {
         batch.draw(texture, getX() - (width / 2f), getY() - (height / 2f), width, height);
     }
 
-    public int getX() {
-        return (int) (body.getPosition().x / GameSettings.SCALE);
+    public float getX() {
+        return (body.getPosition().x / GameSettings.SCALE);
     }
 
-    public int getY() {
-        return (int) (body.getPosition().y / GameSettings.SCALE);
+    public float getY() {
+        return (body.getPosition().y / GameSettings.SCALE);
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         body.setTransform(x * GameSettings.SCALE, body.getPosition().y, 0);
     }
-
-    public void setY(int y) {
+    public void setY(float y) {
         body.setTransform(body.getPosition().x, y * GameSettings.SCALE, 0);
     }
 
@@ -54,7 +53,7 @@ public class GameObject {
         if (cBits == GameSettings.SMALL_STONE_BIT){
             def.type = BodyDef.BodyType.KinematicBody;
             def.fixedRotation = true;
-            float[] verts = {-59, 100, -92, 0, -92, -16, -59, -50, 58, -50, 92, -16, 92, 16, 58, 100};
+            float[] verts = {-30, 25, -46, 0, -46, -8, -30, -25, 29, -25, 46, -8, 46, 8, 29, 25};
             for (int i = 0; i < verts.length; i++) {
                 verts[i] *= GameSettings.SCALE;
             }
@@ -69,15 +68,7 @@ public class GameObject {
             fixtureDef.friction = 1f;
             fixtureDef.filter.categoryBits = cBits;
             fixtureDef.isSensor = false;
-            if(cBits==GameSettings.STONE_BIT){
-                fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
-            }
-            else if(cBits==GameSettings.ALP_BIT){
-                fixtureDef.filter.maskBits = GameSettings.STONE_BIT | GameSettings.SMALL_STONE_BIT | GameSettings.GROUND_BIT;
-            }
-            else if(cBits == GameSettings.SMALL_STONE_BIT){
-                fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
-            }
+            fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
 
             Fixture fixture = body.createFixture(fixtureDef);
             fixture.setUserData(this);
@@ -87,10 +78,9 @@ public class GameObject {
             return body;
         }
         else if (cBits == GameSettings.ALP_BIT){
-            def.type = BodyDef.BodyType.KinematicBody;
             def.type = BodyDef.BodyType.DynamicBody;
             def.fixedRotation = true;
-            float[] verts = {-109, 66, -43, -150, 40, -150, 109, 66, 6, 150, -9, 150};
+            float[] verts = {-73, 44, -28, -100, 28, -100, 73, 44, 5, 100, -5, 100};
             for (int i = 0; i < verts.length; i++) {
                 verts[i] *= GameSettings.SCALE;
             }
@@ -103,15 +93,7 @@ public class GameObject {
             fixtureDef.friction = 1f;
             fixtureDef.filter.categoryBits = cBits;
             fixtureDef.isSensor = false;
-            if(cBits==GameSettings.STONE_BIT){
-                fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
-            }
-            else if(cBits==GameSettings.ALP_BIT){
-                fixtureDef.filter.maskBits = GameSettings.STONE_BIT | GameSettings.SMALL_STONE_BIT | GameSettings.GROUND_BIT;
-            }
-            else if(cBits == GameSettings.SMALL_STONE_BIT){
-                fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
-            }
+            fixtureDef.filter.maskBits = GameSettings.STONE_BIT | GameSettings.SMALL_STONE_BIT | GameSettings.GROUND_BIT;
             Fixture fixture = body.createFixture(fixtureDef);
             fixture.setUserData(this);
             shape.dispose();
@@ -136,13 +118,6 @@ public class GameObject {
             if(cBits==GameSettings.STONE_BIT){
                 fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
             }
-            else if(cBits==GameSettings.ALP_BIT){
-                fixtureDef.filter.maskBits = GameSettings.STONE_BIT | GameSettings.SMALL_STONE_BIT | GameSettings.GROUND_BIT;
-            }
-            else if(cBits == GameSettings.SMALL_STONE_BIT){
-                fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
-            }
-
             Fixture fixture = body.createFixture(fixtureDef);
             fixture.setUserData(this);
             circleShape.dispose();
@@ -153,7 +128,6 @@ public class GameObject {
     }
 
     public void dispose (){
-
         texture.dispose();
    }
 }

@@ -14,8 +14,8 @@ public class GameSettings {
     public static final int  AMOGUS_HEIGHT=200;
     public static final int  STONE_WIDTH=100;
     public static final int  STONE_HEIGHT=100;
-    public static final int  SMALL_STONE_WIDTH=100;
-    public static final int SMALL_STONE_HEIGHT=55;
+    public static final int  SMALL_STONE_WIDTH=92;
+    public static final int SMALL_STONE_HEIGHT=50;
     public static final int  ALP_LEFT_WIDTH=130;
     public static final int  ALP_LEFT_HEIGHT=200;
     public static final int  ALP_RIGHT_WIDTH=130;
