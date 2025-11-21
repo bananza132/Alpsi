@@ -162,6 +162,8 @@ public class ScreenGame extends ScreenAdapter   {
                 gameSession.endGame();
                 recordsListView.setRecords(MemoryManager.loadRecordsTable());    }
             liveView.setLeftLives(alpObject.getLiveLeft());
+            gameSession.updateScore();
+            scoreTextView.setText("Score: " + gameSession.getScore());
         }
         if (isGrabbing && !movementTriggered) {
             moveEnvironmentOnce();
@@ -172,11 +174,6 @@ public class ScreenGame extends ScreenAdapter   {
         if (!isGrabbing && movementTriggered) {
             movementTriggered = false;
         }
-        gameSession.updateScore();
-        scoreTextView.setText("Score: " + gameSession.getScore());
-
-
-
         updateStone();
 
         draw();
@@ -453,7 +450,11 @@ public class ScreenGame extends ScreenAdapter   {
     private void tryGrabStone(Vector3 touchPos, boolean flag) {
 
         for (SmallStoneObject smallStone : smallStoneArray) {
-            if (smallStone == targetStone) {
+            if (smallStone == targetStone && smallStone.body!=null) {
+                if (alpObject.body.getWorld() == null || smallStone.body.getWorld() == null) {
+                    waitingForGrab = false;
+                    return;
+                }
                 float grabXpix, grabYpix;
                 if (!flag) {
                     // альпинист слева — берем правый край камня
