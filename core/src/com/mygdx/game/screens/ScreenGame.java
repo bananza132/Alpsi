@@ -35,6 +35,7 @@ public class ScreenGame extends ScreenAdapter   {
     private boolean hasMountainMoved = false;
     private boolean movementTriggered = false;
     private boolean touchProcessed = false;
+    boolean hasStonesDrown=true;
     private Vector3 lastTouch = new Vector3();
     ArrayList<FallStoneObject> stoneArray;
     ArrayList<SmallStoneObject> smallStoneArray;
@@ -75,7 +76,7 @@ public class ScreenGame extends ScreenAdapter   {
        mountainObject=new MountainObject(0,0,GameSettings.MOUNTAIN_WIDTH,GameSettings.MOUNTAIN_HEIGHT,GameResources.MOUNTAINS_IMG_PATH);
         stoneArray = new ArrayList<>();
         smallStoneArray = new ArrayList<>();
-        int countSmallStones = 10;
+        int countSmallStones = 14;
         for(int i=0;i<countSmallStones;i++){
             SmallStoneObject smallStoneObject=new SmallStoneObject(
                     (i%2)*500 + new Random().nextInt(200), (i/2+1)*200+new Random().nextInt(150),
@@ -124,7 +125,7 @@ public class ScreenGame extends ScreenAdapter   {
     @Override
     public void show() {
         restartGame();
-        int countSmallStones = 10;
+        int countSmallStones = 14;
         for(int i=0;i<countSmallStones;i++){
             SmallStoneObject smallStoneObject=new SmallStoneObject(
                     (i%2)*500 + new Random().nextInt(200), (i/2+1)*200+new Random().nextInt(150),
@@ -139,12 +140,13 @@ public class ScreenGame extends ScreenAdapter   {
         myGdxGame.stepWorld();
         handleInput();
         if (waitingForGrab && targetStone != null) {
-            moveAlpTowardsStone();
+            moveAlpTowardsStone(delta);
         }
         if (waitingForGrab && !isGrabbing) {
             checkAndGrab();
         }
         mountainObject.move();
+        checkAndRespawnSmallStones();
         if (gameSession.state == GameState.PLAYING) {
             if (gameSession.shouldSpawnStone()) {
                 FallStoneObject stoneObject = new FallStoneObject(
@@ -176,14 +178,36 @@ public class ScreenGame extends ScreenAdapter   {
 
     }
 
+    private void checkAndRespawnSmallStones() {
+        for (int i = 0; i < smallStoneArray.size(); i++) {
+            SmallStoneObject stone = smallStoneArray.get(i);
+
+            // Проверяем, вышел ли камень за нижнюю границу экрана
+            if (stone.getY() + stone.getHeight() < 0) {
+
+                // Создаем новый камень сверху с случайной позицией
+                Random random = new Random();
+                float newX = (i%2) * 500 + random.nextInt(200);
+                float newY = GameSettings.SCREEN_HEIGHT + random.nextInt(300) + 100;
+
+                stone.body.setTransform(newX*GameSettings.SCALE, newY*GameSettings.SCALE, 0);
+
+                System.out.println("Small stone respawned at: " + newX + ", " + newY);
+            }
+        }
+    }
+
     private void moveEnvironmentOnce() {
         // Двигаем маленькие камни вниз на фиксированное расстояние
-        float dropDistance = 100f; // Фиксированное расстояние для движения в пикселях
+        float dropDistance = 70f; // Фиксированное расстояние для движения в пикселях
         for (SmallStoneObject s : smallStoneArray) {// Не двигаем захваченный камень
                 float nx = s.body.getPosition().x;
                 float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
                 s.body.setTransform(nx, ny, s.body.getAngle());
         }
+        alpObject.body.setTransform(alpObject.body.getPosition().x,
+                alpObject.body.getPosition().y-dropDistance*GameSettings.SCALE,
+                alpObject.body.getAngle());
 
         // Двигаем гору на фиксированное расстояние
         mountainObject.move();
@@ -197,30 +221,29 @@ public class ScreenGame extends ScreenAdapter   {
         System.out.println("Environment moved for grab action");
     }
 
-    private void moveAlpTowardsStone() {
-        if (targetStone == null) return;
+    public void moveAlpTowardsStone(float delta) {
 
-        Vector2 alpPos = new Vector2(alpObject.getX(), alpObject.getY());
-        Vector2 stonePos;
-        if (targetIsRightSide){
-             stonePos = new Vector2(targetStone.getX()-targetStone.getWidth()/2f, targetStone.getY());
+        if (alpObject == null || targetStone == null) return;
 
-        }
-        else {
-            stonePos = new Vector2(targetStone.getX()+targetStone.getWidth()/2f, targetStone.getY());
-        }
+        Vector2 alpPos = alpObject.body.getPosition();
+        Vector2 stoneCenter = targetStone.body.getPosition();
 
+        float halfWidthMeters = (targetStone.getWidth() * GameSettings.SCALE) / 2f;
 
-        float distance = alpPos.dst(stonePos);
+        Vector2 targetPoint;
 
-        // Если ещё далеко — продолжаем движение
-        if (distance > 200f) {
-            alpObject.moveTowards(stonePos.scl(GameSettings.SCALE), 100f); // скорость подбери сам
+        if (targetIsRightSide) {
+            targetPoint = new Vector2(stoneCenter.x - halfWidthMeters, stoneCenter.y);
         } else {
-            // достигли камня → пробуем захват
+            targetPoint = new Vector2(stoneCenter.x + halfWidthMeters, stoneCenter.y);
+        }
+
+        float distance = alpPos.dst(targetPoint);
+
+        if (distance > 0.05f) {
+            alpObject.moveTowards(targetPoint, 10000f);
+        } else {
             tryGrabStone(targetTouchPos, targetIsRightSide);
-            waitingForGrab = false;
-            targetStone = null;
         }
     }
     private void handleInput() {
@@ -394,6 +417,7 @@ public class ScreenGame extends ScreenAdapter   {
         );
         gameSession.startGame();
         hasMountainMoved = false;
+        hasStonesDrown=true;
     }
 
     private void checkAndGrab() {

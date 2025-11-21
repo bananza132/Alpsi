@@ -1,10 +1,8 @@
 package com.mygdx.game.objects;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
 
 import java.util.Random;
@@ -23,7 +21,7 @@ public class MountainObject  {
    public MountainObject(int x, int y, int width, int height, String texturePath) {
      texture=new Texture(texturePath);
      texture1Y=0;
-     texture2Y= GameSettings.SCREEN_WIDTH;
+     texture2Y= GameSettings.SCREEN_HEIGHT;
        this.height=height;
        this.width=width;
        textureRegions=new TextureRegion[3];
@@ -49,13 +47,13 @@ public class MountainObject  {
         if (moveDistance >= maxMoveDistance) {
             stopMoving(); // Останавливаем движение
         }
-        if (texture1Y <= -GameSettings.SCREEN_WIDTH) {
-            texture1Y= GameSettings.SCREEN_WIDTH;
+        if (texture1Y <= -GameSettings.SCREEN_HEIGHT) {
+            texture1Y= GameSettings.SCREEN_HEIGHT;
             int randomIndex=new Random().nextInt(3);
             texture1=textureRegions[randomIndex];
         }
-        if (texture2Y <= -GameSettings.SCREEN_WIDTH) {
-            texture2Y = GameSettings.SCREEN_WIDTH;
+        if (texture2Y <= -GameSettings.SCREEN_HEIGHT) {
+            texture2Y = GameSettings.SCREEN_HEIGHT;
           int  randomIndex=new Random().nextInt(3);
             texture2=textureRegions[randomIndex];
         }
@@ -71,6 +69,11 @@ public class MountainObject  {
     }
     public boolean isMoving() {
         return isMoving;
+    }
+
+
+    public float getY() {
+        return Math.max(texture1Y, texture2Y);
     }
 
     public void draw(SpriteBatch batch) {
