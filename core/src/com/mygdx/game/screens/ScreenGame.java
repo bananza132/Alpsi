@@ -15,9 +15,11 @@ import com.mygdx.game.components.BackgroundView;
 import com.mygdx.game.components.ButtonView;
 import com.mygdx.game.components.ImageView;
 import com.mygdx.game.components.LiveView;
+import com.mygdx.game.components.RecordsListView;
 import com.mygdx.game.components.TextView;
 import com.mygdx.game.managers.ContactManager;
 import com.mygdx.game.managers.GrabManager;
+import com.mygdx.game.managers.MemoryManager;
 import com.mygdx.game.objects.AlpObject;
 import com.mygdx.game.objects.FallStoneObject;
 import com.mygdx.game.objects.GroundObject;
@@ -53,7 +55,7 @@ public class ScreenGame extends ScreenAdapter   {
     BackgroundView backgroundView;
     ImageView topBlackoutView;
     LiveView liveView;
-    //TextView scoreTextView;
+   TextView scoreTextView;
     ButtonView inventoryButton;
 
     // PAUSED state UI
@@ -63,8 +65,8 @@ public class ScreenGame extends ScreenAdapter   {
     ButtonView continueButton;
 
     // ENDED state UI
-    //TextView recordsTextView;
-    //RecordsListView recordsListView;
+    TextView recordsTextView;
+    RecordsListView recordsListView;
     ButtonView homeButton2;
 
     public ScreenGame(MyGdxGame myGdxGame){
@@ -88,7 +90,7 @@ public class ScreenGame extends ScreenAdapter   {
         backgroundView = new BackgroundView(GameResources.BACKGROUND_DEATH_IMG_PATH);
         topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
         liveView = new LiveView(305, 1215);
-        //scoreTextView = new TextView(myGdxGame.commonWhiteFont, 50, 1215);
+        scoreTextView = new TextView(myGdxGame.commonBlackFont, 50, 1215);
         inventoryButton = new ButtonView(
                 605, 1185,
                 80, 80,
@@ -112,8 +114,8 @@ public class ScreenGame extends ScreenAdapter   {
                 "Continue"
         );
 
-        //recordsListView = new RecordsListView(myGdxGame.commonWhiteFont, 690);
-        //recordsTextView = new TextView(myGdxGame.largeWhiteFont, 206, 842, "Last records");
+        recordsListView = new RecordsListView(myGdxGame.commonWhiteFont, 690);
+        recordsTextView = new TextView(myGdxGame.largeWhiteFont, 206, 842, "Last records");
         homeButton2 = new ButtonView(
                 280, 365,
                 160, 70,
@@ -157,7 +159,8 @@ public class ScreenGame extends ScreenAdapter   {
                 stoneArray.add(stoneObject);
             }
             if (!alpObject.isAlive()) {
-                gameSession.state = GameState.ENDED;          }
+                gameSession.endGame();
+                recordsListView.setRecords(MemoryManager.loadRecordsTable());    }
             liveView.setLeftLives(alpObject.getLiveLeft());
         }
         if (isGrabbing && !movementTriggered) {
@@ -169,6 +172,8 @@ public class ScreenGame extends ScreenAdapter   {
         if (!isGrabbing && movementTriggered) {
             movementTriggered = false;
         }
+        gameSession.updateScore();
+        scoreTextView.setText("Score: " + gameSession.getScore());
 
 
 
@@ -240,11 +245,10 @@ public class ScreenGame extends ScreenAdapter   {
 
         float distance = alpPos.dst(targetPoint);
 
-        if (distance > 10f) {
+        if (distance > 0.5f) {
             alpObject.moveTowards(targetPoint, 100f);
         } else {
             tryGrabStone(targetTouchPos, targetIsRightSide);
-           myGdxGame.audioManager.stoneDoodleSound.play();
         }
     }
     private void handleInput() {
@@ -348,6 +352,7 @@ public class ScreenGame extends ScreenAdapter   {
         alpObject.draw(myGdxGame.batch);
         for(SmallStoneObject smallStone: smallStoneArray) smallStone.draw(myGdxGame.batch);
         topBlackoutView.draw(myGdxGame.batch);
+        scoreTextView.draw(myGdxGame.batch);
         liveView.draw(myGdxGame.batch);
         inventoryButton.draw(myGdxGame.batch);
         if (gameSession.state == GameState.PAUSED) {
@@ -358,6 +363,8 @@ public class ScreenGame extends ScreenAdapter   {
         } else if (gameSession.state == GameState.ENDED) {
             backgroundView.draw(myGdxGame.batch);
             fullBlackoutView.draw(myGdxGame.batch);
+            recordsTextView.draw(myGdxGame.batch);
+            recordsListView.draw(myGdxGame.batch);
             homeButton2.draw(myGdxGame.batch);
         }
         myGdxGame.batch.end();
@@ -467,6 +474,10 @@ public class ScreenGame extends ScreenAdapter   {
                 Vector2 alpPointMeters = new Vector2(alpHandXpix * GameSettings.SCALE, alpHandYpix * GameSettings.SCALE);
                 grabManager.grab(alpObject.body, smallStone.body, grabPointMeters,alpPointMeters);
                 System.out.println("Grabbed");
+                myGdxGame.audioManager.stoneDoodleSound.play(0.2f);
+                gameSession.climbingRegistration();
+
+
 
                 isGrabbing = true;
                 currentGrabbedStone = smallStone;

@@ -1,12 +1,17 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.utils.TimeUtils;
+import com.mygdx.game.managers.MemoryManager;
+
+import java.util.ArrayList;
 
 public class GameSession {
     public GameState state;
     long nextStoneSpawnTime;
     long sessionStartTime;
     long pauseStartTime;
+    private int score;
+    int climbedStonesNumber;
 
     public GameSession() {
     }
@@ -16,6 +21,8 @@ public class GameSession {
         sessionStartTime = TimeUtils.millis();
         nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
                 * getStonePeriodCoolDown());
+        score=0;
+        climbedStonesNumber=0;
     }
 
     public void pauseGame() {
@@ -26,6 +33,31 @@ public class GameSession {
     public void resumeGame() {
         state = GameState.PLAYING;
         sessionStartTime += TimeUtils.millis() - pauseStartTime;
+    }
+    public void endGame() {
+        updateScore();
+        state = GameState.ENDED;
+        ArrayList<Integer> recordsTable = MemoryManager.loadRecordsTable();
+        if (recordsTable == null) {
+            recordsTable = new ArrayList<>();
+        }
+        int foundIdx = 0;
+        for (; foundIdx < recordsTable.size(); foundIdx++) {
+            if (recordsTable.get(foundIdx) < getScore()) break;
+        }
+        recordsTable.add(foundIdx, getScore());
+        MemoryManager.saveTableOfRecords(recordsTable);
+    }
+    public void climbingRegistration() {
+        climbedStonesNumber += 1;
+    }
+
+    public void updateScore() {
+        score = (int) (TimeUtils.millis() - sessionStartTime) / 100 + climbedStonesNumber * 100;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     public boolean shouldSpawnStone() {
