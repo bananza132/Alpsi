@@ -52,6 +52,6 @@ public class GroundObject extends GameObject{
         isMoving = false;
     }
     public void  move(){
-        body.setTransform(body.getPosition().x,-height * GameSettings.SCALE,0);
+        body.setTransform(body.getPosition().x,-height*2 * GameSettings.SCALE,0);
     }
 }

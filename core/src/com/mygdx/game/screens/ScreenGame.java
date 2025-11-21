@@ -138,6 +138,9 @@ public class ScreenGame extends ScreenAdapter   {
     public void render(float delta) {
         myGdxGame.stepWorld();
         handleInput();
+        if (waitingForGrab && targetStone != null) {
+            moveAlpTowardsStone();
+        }
         if (waitingForGrab && !isGrabbing) {
             checkAndGrab();
         }
@@ -194,8 +197,34 @@ public class ScreenGame extends ScreenAdapter   {
         System.out.println("Environment moved for grab action");
     }
 
+    private void moveAlpTowardsStone() {
+        if (targetStone == null) return;
 
+        Vector2 alpPos = new Vector2(alpObject.getX(), alpObject.getY());
+        Vector2 stonePos;
+        if (targetIsRightSide){
+             stonePos = new Vector2(targetStone.getX()-targetStone.getWidth()/2f, targetStone.getY());
+
+        }
+        else {
+            stonePos = new Vector2(targetStone.getX()+targetStone.getWidth()/2f, targetStone.getY());
+        }
+
+
+        float distance = alpPos.dst(stonePos);
+
+        // Если ещё далеко — продолжаем движение
+        if (distance > 200f) {
+            alpObject.moveTowards(stonePos.scl(GameSettings.SCALE), 100f); // скорость подбери сам
+        } else {
+            // достигли камня → пробуем захват
+            tryGrabStone(targetTouchPos, targetIsRightSide);
+            waitingForGrab = false;
+            targetStone = null;
+        }
+    }
     private void handleInput() {
+
         if (Gdx.input.justTouched()) {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
@@ -217,21 +246,26 @@ public class ScreenGame extends ScreenAdapter   {
                             boolean isRightSide = myGdxGame.touch.x >= alpObject.getX();
                             if (!isGrabbing && !waitingForGrab) {
                                 // ПЕРВОЕ нажатие - начинаем движение к камню
-                                alpObject.move(myGdxGame.touch);
-                                mountainObject.startMoving();
+
 
                                 // Сохраняем цель для последующего захвата
                                 waitingForGrab = true;
                                 targetStone = smallStone;
                                 targetIsRightSide = isRightSide;
                                 targetTouchPos = new Vector3(myGdxGame.touch);
+                                if (targetIsRightSide){
+                                    alpObject.move(new Vector3(targetStone.getX()-targetStone.getWidth()/2f,targetStone.getY(),0));
+                                }
+                                else {
+                                    alpObject.move(new Vector3(targetStone.getX()+targetStone.getWidth()/2f,targetStone.getY(),0));
+                                }
+
+                                mountainObject.startMoving();
                             } else {
                                 releaseStone();
                                 smallStone.body.setActive(false);
                                 if (!isGrabbing && !waitingForGrab) {
                                     // ПЕРВОЕ нажатие - начинаем движение к камню
-                                    alpObject.move(myGdxGame.touch);
-                                    mountainObject.startMoving();
                                     groundObject.move();
 
                                     // Сохраняем цель для последующего захвата
@@ -239,6 +273,14 @@ public class ScreenGame extends ScreenAdapter   {
                                     targetStone = smallStone;
                                     targetIsRightSide = isRightSide;
                                     targetTouchPos = new Vector3(myGdxGame.touch);
+                                    if (targetIsRightSide){
+                                        alpObject.move(new Vector3(targetStone.getX()-targetStone.getWidth()/2f,targetStone.getY(),0));
+                                    }
+                                    else {
+                                        alpObject.move(new Vector3(targetStone.getX()+targetStone.getWidth()/2f,targetStone.getY(),0));
+                                    }
+
+                                    mountainObject.startMoving();
                                 }
                             }
 

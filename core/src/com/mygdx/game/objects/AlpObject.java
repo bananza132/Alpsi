@@ -68,6 +68,12 @@ public class AlpObject extends GameObject {
         if (body == null) return false;
         return body.getLinearVelocity().len() > 0.01f;
     }
+    public void moveTowards(Vector2 target, float speed) {
+        Vector2 pos = body.getPosition();
+        Vector2 direction = target.sub(pos).nor();
+
+        body.setLinearVelocity(direction.scl(speed));
+    }
 
 
     public int getLiveLeft() {
