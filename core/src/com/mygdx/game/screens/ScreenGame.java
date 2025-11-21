@@ -240,10 +240,11 @@ public class ScreenGame extends ScreenAdapter   {
 
         float distance = alpPos.dst(targetPoint);
 
-        if (distance > 0.05f) {
-            alpObject.moveTowards(targetPoint, 10000f);
+        if (distance > 10f) {
+            alpObject.moveTowards(targetPoint, 100f);
         } else {
             tryGrabStone(targetTouchPos, targetIsRightSide);
+           myGdxGame.audioManager.stoneDoodleSound.play();
         }
     }
     private void handleInput() {
