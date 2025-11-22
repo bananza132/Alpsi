@@ -130,8 +130,8 @@ public class ScreenGame extends ScreenAdapter {
             gameSession.updateScore();
             scoreTextView.setText("Score: " + gameSession.getScore());
         }
-        if (isGrabbing && !movementTriggered && alpObject.getY()-pastAlpHeight>50f) {
-            for (int i = 0; i < (alpObject.getY()-pastAlpHeight)/50f; i++) {
+        if (isGrabbing && !movementTriggered && alpObject.getY()-pastAlpHeight>30f) {
+            for (int i = 0; i < (alpObject.getY()-pastAlpHeight)/30f; i++) {
                 moveEnvironmentOnce();
             }
             movementTriggered = true;
@@ -153,14 +153,25 @@ public class ScreenGame extends ScreenAdapter {
                 maxY=stone.getY();
             }
         }
+        System.out.println(maxY);
         for (int i = 0; i < smallStoneArray.size(); i++) {
             SmallStoneObject stone = smallStoneArray.get(i);
 
             if (stone.getY() + stone.getHeight() < 0) {
                 Random random = new Random();
                 float newX = (i % 2) * 500 + random.nextInt(200);
-                float newY = maxY + 100 + random.nextInt(50);
+                float newY;
+                if(i<2){
+                    newY = maxY + (i+1)%2*100 + random.nextInt(50);
+                }
+                else{
+                    newY = maxY + (i%2) * 150 + random.nextInt(50);
+                }
+
                 stone.body.setTransform(newX * GameSettings.SCALE, newY * GameSettings.SCALE, 0);
+                if (newY > maxY){
+                    maxY = newY;
+                }
 
                 System.out.println("Small stone respawned at: " + newX + ", " + newY);
             }
@@ -168,7 +179,7 @@ public class ScreenGame extends ScreenAdapter {
     }
 
     private void moveEnvironmentOnce() {
-        float dropDistance = 120f;
+        float dropDistance = 190f;
         for (SmallStoneObject s : smallStoneArray) {
             float nx = s.body.getPosition().x;
             float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
@@ -230,7 +241,7 @@ public class ScreenGame extends ScreenAdapter {
 
                     for (SmallStoneObject smallStone : smallStoneArray) {
                         if (smallStone.isTouched(myGdxGame.touch)) {
-                            if (myGdxGame.touch.y - alpObject.getY() > -20f){
+                            if (myGdxGame.touch.y - alpObject.getY() > -20f && myGdxGame.touch.y - alpObject.getY() < 400f){
                                 boolean isRightSide;
                                 if(pastStone != null){
                                     isRightSide = pastStone.getX() < smallStone.getX();
