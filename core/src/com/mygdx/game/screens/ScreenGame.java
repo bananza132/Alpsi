@@ -101,11 +101,6 @@ public class ScreenGame extends ScreenAdapter {
     @Override
     public void show() {
         restartGame();
-        int countSmallStones = 14;
-        for (int i = 0; i < countSmallStones; i++) {
-            SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
-            smallStoneArray.add(smallStoneObject);
-        }
     }
 
     @Override
@@ -154,7 +149,7 @@ public class ScreenGame extends ScreenAdapter {
             if (stone.getY() + stone.getHeight() < 0) {
                 Random random = new Random();
                 float newX = (i % 2) * 500 + random.nextInt(200);
-                float newY = GameSettings.SCREEN_HEIGHT + random.nextInt(300) + 100;
+                float newY = GameSettings.SCREEN_HEIGHT + random.nextInt(100) + 100;
 
                 stone.body.setTransform(newX * GameSettings.SCALE, newY * GameSettings.SCALE, 0);
 
@@ -242,7 +237,6 @@ public class ScreenGame extends ScreenAdapter {
                                 mountainObject.startMoving();
                             } else {
                                 releaseStone();
-                                smallStone.body.setActive(false);
                                 if (!isGrabbing && !waitingForGrab) {
                                     groundObject.move();
 
@@ -351,6 +345,8 @@ public class ScreenGame extends ScreenAdapter {
     }
 
     private void restartGame() {
+        grabManager=new GrabManager(myGdxGame.world);
+        contactManager=new ContactManager(myGdxGame.world);
 
         for (int i = 0; i < stoneArray.size(); i++) {
             myGdxGame.world.destroyBody(stoneArray.get(i).body);
@@ -367,9 +363,19 @@ public class ScreenGame extends ScreenAdapter {
         mountainObject = new MountainObject(0, 0, GameSettings.MOUNTAIN_WIDTH, GameSettings.MOUNTAIN_HEIGHT, GameResources.MOUNTAINS_IMG_PATH);
         groundObject = new GroundObject(GameSettings.SCREEN_WIDTH / 2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
         alpObject = new AlpObject(GameSettings.SCREEN_WIDTH / 2, 150, GameSettings.ALP_WIDTH, GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH, myGdxGame.world);
+        smallStoneArray=new ArrayList<>();
+        int countSmallStones = 14;
+        for (int i = 0; i < countSmallStones; i++) {
+            SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
+            smallStoneArray.add(smallStoneObject);
+        }
         gameSession.startGame();
         hasMountainMoved = false;
         hasStonesDrown = true;
+        movementTriggered=false;
+        isGrabbing=false;
+        waitingForGrab=false;
+        targetStone=null;
     }
 
     private void checkAndGrab() {
