@@ -56,6 +56,7 @@ public class ScreenGame extends ScreenAdapter {
     TextView recordsTextView;
     RecordsListView recordsListView;
     ButtonView homeButton2;
+    float pastAlpHeight=150;
     private boolean hasMountainMoved = false;
     private boolean movementTriggered = false;
     private final boolean touchProcessed = false;
@@ -76,7 +77,7 @@ public class ScreenGame extends ScreenAdapter {
         mountainObject = new MountainObject(0, 0, GameSettings.MOUNTAIN_WIDTH, GameSettings.MOUNTAIN_HEIGHT, GameResources.MOUNTAINS_IMG_PATH);
         stoneArray = new ArrayList<>();
         smallStoneArray = new ArrayList<>();
-        int countSmallStones = 14;
+        int countSmallStones = 16;
         for (int i = 0; i < countSmallStones; i++) {
             SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
@@ -128,7 +129,7 @@ public class ScreenGame extends ScreenAdapter {
             gameSession.updateScore();
             scoreTextView.setText("Score: " + gameSession.getScore());
         }
-        if (isGrabbing && !movementTriggered) {
+        if (isGrabbing && !movementTriggered && alpObject.getY()-pastAlpHeight>50f) {
             moveEnvironmentOnce();
             movementTriggered = true;
         }
@@ -159,7 +160,7 @@ public class ScreenGame extends ScreenAdapter {
     }
 
     private void moveEnvironmentOnce() {
-        float dropDistance = 70f;
+        float dropDistance = 100f;
         for (SmallStoneObject s : smallStoneArray) {
             float nx = s.body.getPosition().x;
             float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
@@ -224,6 +225,7 @@ public class ScreenGame extends ScreenAdapter {
 
                             boolean isRightSide = myGdxGame.touch.x >= alpObject.getX();
                             if (!isGrabbing && !waitingForGrab) {
+                                pastAlpHeight=alpObject.getY();
                                 waitingForGrab = true;
                                 targetStone = smallStone;
                                 targetIsRightSide = isRightSide;
@@ -238,7 +240,7 @@ public class ScreenGame extends ScreenAdapter {
                             } else {
                                 releaseStone();
                                 if (!isGrabbing && !waitingForGrab) {
-                                    groundObject.move();
+                                    pastAlpHeight=alpObject.getY();
 
                                     waitingForGrab = true;
                                     targetStone = smallStone;
@@ -386,7 +388,7 @@ public class ScreenGame extends ScreenAdapter {
         groundObject = new GroundObject(GameSettings.SCREEN_WIDTH / 2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
         alpObject = new AlpObject(GameSettings.SCREEN_WIDTH / 2, 150, GameSettings.ALP_WIDTH, GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH, myGdxGame.world);
         smallStoneArray=new ArrayList<>();
-        int countSmallStones = 14;
+        int countSmallStones = 16;
         for (int i = 0; i < countSmallStones; i++) {
             SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
