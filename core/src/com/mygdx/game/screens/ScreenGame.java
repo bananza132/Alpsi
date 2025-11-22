@@ -66,6 +66,7 @@ public class ScreenGame extends ScreenAdapter {
     private SmallStoneObject targetStone;
     private boolean targetIsRightSide;
     private Vector3 targetTouchPos;
+    private SmallStoneObject pastStone;
     private SmallStoneObject currentGrabbedStone;
 
     public ScreenGame(MyGdxGame myGdxGame) {
@@ -130,7 +131,7 @@ public class ScreenGame extends ScreenAdapter {
             scoreTextView.setText("Score: " + gameSession.getScore());
         }
         if (isGrabbing && !movementTriggered && alpObject.getY()-pastAlpHeight>50f) {
-            for (int i = 0; i < 2.5*(alpObject.getY()-pastAlpHeight)/50f; i++) {
+            for (int i = 0; i < (alpObject.getY()-pastAlpHeight)/50f; i++) {
                 moveEnvironmentOnce();
             }
             movementTriggered = true;
@@ -162,7 +163,7 @@ public class ScreenGame extends ScreenAdapter {
     }
 
     private void moveEnvironmentOnce() {
-        float dropDistance = 100f;
+        float dropDistance = 120f;
         for (SmallStoneObject s : smallStoneArray) {
             float nx = s.body.getPosition().x;
             float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
@@ -192,9 +193,9 @@ public class ScreenGame extends ScreenAdapter {
         Vector2 targetPoint;
 
         if (targetIsRightSide) {
-            targetPoint = new Vector2(stoneCenter.x - halfWidthMeters, stoneCenter.y);
-        } else {
             targetPoint = new Vector2(stoneCenter.x + halfWidthMeters, stoneCenter.y);
+        } else {
+            targetPoint = new Vector2(stoneCenter.x - halfWidthMeters, stoneCenter.y);
         }
 
         float distance = alpPos.dst(targetPoint);
@@ -224,36 +225,53 @@ public class ScreenGame extends ScreenAdapter {
 
                     for (SmallStoneObject smallStone : smallStoneArray) {
                         if (smallStone.isTouched(myGdxGame.touch)) {
-
-                            boolean isRightSide = myGdxGame.touch.x >= alpObject.getX();
-                            if (!isGrabbing && !waitingForGrab) {
-                                pastAlpHeight=alpObject.getY();
-                                waitingForGrab = true;
-                                targetStone = smallStone;
-                                targetIsRightSide = isRightSide;
-                                targetTouchPos = new Vector3(myGdxGame.touch);
-                                if (targetIsRightSide) {
-                                    alpObject.move(new Vector3(targetStone.getX() - targetStone.getWidth() / 2f, targetStone.getY(), 0));
-                                } else {
-                                    alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
+                            if (myGdxGame.touch.y - alpObject.getY() > -20f){
+                                boolean isRightSide;
+                                if(pastStone != null){
+                                    isRightSide = pastStone.getX() < smallStone.getX();
+                                    System.out.println(pastStone.getX()+" "+smallStone.getX());
+                                }
+                                else{
+                                    isRightSide = smallStone.getX() > alpObject.getX();
                                 }
 
-                            } else {
-                                releaseStone();
+
                                 if (!isGrabbing && !waitingForGrab) {
                                     pastAlpHeight=alpObject.getY();
-
                                     waitingForGrab = true;
+                                    pastStone = smallStone;
                                     targetStone = smallStone;
                                     targetIsRightSide = isRightSide;
                                     targetTouchPos = new Vector3(myGdxGame.touch);
                                     if (targetIsRightSide) {
-                                        alpObject.move(new Vector3(targetStone.getX() - targetStone.getWidth() / 2f, targetStone.getY(), 0));
-                                    } else {
                                         alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
+                                    } else {
+                                        alpObject.move(new Vector3(targetStone.getX() - targetStone.getWidth() / 2f, targetStone.getY(), 0));
                                     }
 
-                                }
+                                } else {
+                                    releaseStone();
+                                    if (!isGrabbing && !waitingForGrab) {
+                                        pastAlpHeight=alpObject.getY();
+                                        if(targetStone != null){
+                                            isRightSide = targetStone.getX() < smallStone.getX();
+                                        }
+                                        else{
+                                            isRightSide = smallStone.getX() > alpObject.getX();
+                                        }
+
+                                        waitingForGrab = true;
+                                        targetStone = smallStone;
+                                        targetIsRightSide = isRightSide;
+                                        targetTouchPos = new Vector3(myGdxGame.touch);
+                                        if (targetIsRightSide) {
+                                            alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
+                                        } else {
+                                            alpObject.move(new Vector3(targetStone.getX() - targetStone.getWidth() / 2f, targetStone.getY(), 0));
+                                        }
+
+                                    }
+                            }
                             }
 
 
