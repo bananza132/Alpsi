@@ -168,7 +168,7 @@ public class ScreenGame extends ScreenAdapter {
         }
         alpObject.body.setTransform(alpObject.body.getPosition().x, alpObject.body.getPosition().y - dropDistance * GameSettings.SCALE, alpObject.body.getAngle());
 
-        mountainObject.move();
+        mountainObject.startMoving();
 
         if (!hasMountainMoved) {
             groundObject.move();
@@ -236,7 +236,6 @@ public class ScreenGame extends ScreenAdapter {
                                     alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
                                 }
 
-                                mountainObject.startMoving();
                             } else {
                                 releaseStone();
                                 if (!isGrabbing && !waitingForGrab) {
@@ -252,7 +251,6 @@ public class ScreenGame extends ScreenAdapter {
                                         alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
                                     }
 
-                                    mountainObject.startMoving();
                                 }
                             }
 
