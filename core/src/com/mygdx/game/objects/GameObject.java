@@ -70,7 +70,6 @@ public class GameObject {
             fixtureDef.friction = 1f;
             fixtureDef.filter.categoryBits = cBits;
             fixtureDef.isSensor = false;
-            fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
 
             Fixture fixture = body.createFixture(fixtureDef);
             fixture.setUserData(this);
@@ -94,7 +93,7 @@ public class GameObject {
             fixtureDef.friction = 1f;
             fixtureDef.filter.categoryBits = cBits;
             fixtureDef.isSensor = false;
-            fixtureDef.filter.maskBits = GameSettings.STONE_BIT | GameSettings.SMALL_STONE_BIT | GameSettings.GROUND_BIT;
+            fixtureDef.filter.maskBits = GameSettings.STONE_BIT  | GameSettings.GROUND_BIT;
             Fixture fixture = body.createFixture(fixtureDef);
             fixture.setUserData(this);
             shape.dispose();

@@ -280,6 +280,28 @@ public class ScreenGame extends ScreenAdapter {
             }
         }
     }
+    private boolean areStonesInStraightLine(SmallStoneObject currentStone, SmallStoneObject newStone) {
+        if (currentStone == null || newStone == null || alpObject == null) return false;
+
+        Vector2 alpPos = new Vector2(alpObject.getX(), alpObject.getY());
+        Vector2 currentStonePos = new Vector2(currentStone.getX(), currentStone.getY());
+        Vector2 newStonePos = new Vector2(newStone.getX(), newStone.getY());
+
+        Vector2 toCurrentStone = new Vector2(currentStonePos.x - alpPos.x, currentStonePos.y - alpPos.y);
+        Vector2 toNewStone = new Vector2(newStonePos.x - alpPos.x, newStonePos.y - alpPos.y);
+
+        toCurrentStone.nor();
+        toNewStone.nor();
+
+        float dotProduct = toCurrentStone.dot(toNewStone);
+        boolean isStraightLine = Math.abs(dotProduct) > 0.95f;
+
+        if (isStraightLine) {
+            System.out.println("Stones are in straight line! Dot product: " + dotProduct);
+        }
+
+        return isStraightLine;
+    }
 
     private void draw() {
         myGdxGame.camera.update();
