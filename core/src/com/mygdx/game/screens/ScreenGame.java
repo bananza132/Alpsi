@@ -130,7 +130,9 @@ public class ScreenGame extends ScreenAdapter {
             scoreTextView.setText("Score: " + gameSession.getScore());
         }
         if (isGrabbing && !movementTriggered && alpObject.getY()-pastAlpHeight>50f) {
-            moveEnvironmentOnce();
+            for (int i = 0; i < 2.5*(alpObject.getY()-pastAlpHeight)/50f; i++) {
+                moveEnvironmentOnce();
+            }
             movementTriggered = true;
         }
 
