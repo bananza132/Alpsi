@@ -29,110 +29,81 @@ import com.mygdx.game.objects.SmallStoneObject;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ScreenGame extends ScreenAdapter   {
+public class ScreenGame extends ScreenAdapter {
     MyGdxGame myGdxGame;
     GameSession gameSession;
     AlpObject alpObject;
     MountainObject mountainObject;
-    private boolean hasMountainMoved = false;
-    private boolean movementTriggered = false;
-    private boolean touchProcessed = false;
-    boolean hasStonesDrown=true;
-    private Vector3 lastTouch = new Vector3();
+    boolean hasStonesDrown = true;
     ArrayList<FallStoneObject> stoneArray;
     ArrayList<SmallStoneObject> smallStoneArray;
     //SmallStoneObject smallStoneObject;
     GroundObject groundObject;
     ContactManager contactManager;
     GrabManager grabManager;
+    //Playing
+    BackgroundView backgroundView;
+    ImageView topBlackoutView;
+    LiveView liveView;
+    TextView scoreTextView;
+    ButtonView inventoryButton;
+    // PAUSED state UI
+    ImageView fullBlackoutView;
+    TextView inventoryTextView;
+    ButtonView homeButton;
+    ButtonView continueButton;
+    // ENDED state UI
+    TextView recordsTextView;
+    RecordsListView recordsListView;
+    ButtonView homeButton2;
+    private boolean hasMountainMoved = false;
+    private boolean movementTriggered = false;
+    private final boolean touchProcessed = false;
+    private final Vector3 lastTouch = new Vector3();
     private boolean isGrabbing = false;
     private boolean waitingForGrab = false;
     private SmallStoneObject targetStone;
     private boolean targetIsRightSide;
     private Vector3 targetTouchPos;
     private SmallStoneObject currentGrabbedStone;
-    //Playing
-    BackgroundView backgroundView;
-    ImageView topBlackoutView;
-    LiveView liveView;
-   TextView scoreTextView;
-    ButtonView inventoryButton;
 
-    // PAUSED state UI
-    ImageView fullBlackoutView;
-    TextView inventoryTextView;
-    ButtonView homeButton;
-    ButtonView continueButton;
-
-    // ENDED state UI
-    TextView recordsTextView;
-    RecordsListView recordsListView;
-    ButtonView homeButton2;
-
-    public ScreenGame(MyGdxGame myGdxGame){
+    public ScreenGame(MyGdxGame myGdxGame) {
         gameSession = new GameSession();
-        this.myGdxGame=myGdxGame;
+        this.myGdxGame = myGdxGame;
         contactManager = new ContactManager(myGdxGame.world);
         grabManager = new GrabManager(myGdxGame.world);
-       alpObject=new AlpObject(GameSettings.SCREEN_WIDTH/2,150,GameSettings.ALP_WIDTH,GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH,myGdxGame.world);
-       mountainObject=new MountainObject(0,0,GameSettings.MOUNTAIN_WIDTH,GameSettings.MOUNTAIN_HEIGHT,GameResources.MOUNTAINS_IMG_PATH);
+        alpObject = new AlpObject(GameSettings.SCREEN_WIDTH / 2, 150, GameSettings.ALP_WIDTH, GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH, myGdxGame.world);
+        mountainObject = new MountainObject(0, 0, GameSettings.MOUNTAIN_WIDTH, GameSettings.MOUNTAIN_HEIGHT, GameResources.MOUNTAINS_IMG_PATH);
         stoneArray = new ArrayList<>();
         smallStoneArray = new ArrayList<>();
         int countSmallStones = 14;
-        for(int i=0;i<countSmallStones;i++){
-            SmallStoneObject smallStoneObject=new SmallStoneObject(
-                    (i%2)*500 + new Random().nextInt(200), (i/2+1)*200+new Random().nextInt(150),
-                    GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT,
-                    GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
+        for (int i = 0; i < countSmallStones; i++) {
+            SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
         }
-        groundObject = new GroundObject(GameSettings.SCREEN_WIDTH/2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
+        groundObject = new GroundObject(GameSettings.SCREEN_WIDTH / 2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
         backgroundView = new BackgroundView(GameResources.BACKGROUND_DEATH_IMG_PATH);
         topBlackoutView = new ImageView(0, 1180, GameResources.BLACKOUT_TOP_IMG_PATH);
         liveView = new LiveView(305, 1215);
         scoreTextView = new TextView(myGdxGame.commonBlackFont, 50, 1215);
-        inventoryButton = new ButtonView(
-                605, 1185,
-                80, 80,
-                GameResources.INVENTORY_IMG_PATH
-        );
+        inventoryButton = new ButtonView(605, 1185, 80, 80, GameResources.INVENTORY_IMG_PATH);
 
         fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_IMG_PATH);
         inventoryTextView = new TextView(myGdxGame.largeWhiteFont, 150, 1200, "Inventory/pause");
-        homeButton = new ButtonView(
-                138, 100,
-                200, 70,
-                myGdxGame.commonBlackFont,
-                GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                "Home"
-        );
-        continueButton = new ButtonView(
-                393, 100,
-                200, 70,
-                myGdxGame.commonBlackFont,
-                GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                "Continue"
-        );
+        homeButton = new ButtonView(138, 100, 200, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "Home");
+        continueButton = new ButtonView(393, 100, 200, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "Continue");
 
         recordsListView = new RecordsListView(myGdxGame.commonWhiteFont, 690);
         recordsTextView = new TextView(myGdxGame.largeWhiteFont, 206, 842, "Last records");
-        homeButton2 = new ButtonView(
-                280, 365,
-                160, 70,
-                myGdxGame.commonBlackFont,
-                GameResources.BUTTON_SHORT_BG_IMG_PATH,
-                "Home"
-        );
+        homeButton2 = new ButtonView(280, 365, 160, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "Home");
     }
+
     @Override
     public void show() {
         restartGame();
         int countSmallStones = 14;
-        for(int i=0;i<countSmallStones;i++){
-            SmallStoneObject smallStoneObject=new SmallStoneObject(
-                    (i%2)*500 + new Random().nextInt(200), (i/2+1)*200+new Random().nextInt(150),
-                    GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT,
-                    GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
+        for (int i = 0; i < countSmallStones; i++) {
+            SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
         }
     }
@@ -151,16 +122,13 @@ public class ScreenGame extends ScreenAdapter   {
         checkAndRespawnSmallStones();
         if (gameSession.state == GameState.PLAYING) {
             if (gameSession.shouldSpawnStone()) {
-                FallStoneObject stoneObject = new FallStoneObject(
-                        GameSettings.STONE_WIDTH, GameSettings.STONE_HEIGHT,
-                        GameResources.STONE_IMG_PATH,
-                        myGdxGame.world
-                );
+                FallStoneObject stoneObject = new FallStoneObject(GameSettings.STONE_WIDTH, GameSettings.STONE_HEIGHT, GameResources.STONE_IMG_PATH, myGdxGame.world);
                 stoneArray.add(stoneObject);
             }
             if (!alpObject.isAlive()) {
                 gameSession.endGame();
-                recordsListView.setRecords(MemoryManager.loadRecordsTable());    }
+                recordsListView.setRecords(MemoryManager.loadRecordsTable());
+            }
             liveView.setLeftLives(alpObject.getLiveLeft());
             gameSession.updateScore();
             scoreTextView.setText("Score: " + gameSession.getScore());
@@ -189,10 +157,10 @@ public class ScreenGame extends ScreenAdapter   {
 
                 // Создаем новый камень сверху с случайной позицией
                 Random random = new Random();
-                float newX = (i%2) * 500 + random.nextInt(200);
+                float newX = (i % 2) * 500 + random.nextInt(200);
                 float newY = GameSettings.SCREEN_HEIGHT + random.nextInt(300) + 100;
 
-                stone.body.setTransform(newX*GameSettings.SCALE, newY*GameSettings.SCALE, 0);
+                stone.body.setTransform(newX * GameSettings.SCALE, newY * GameSettings.SCALE, 0);
 
                 System.out.println("Small stone respawned at: " + newX + ", " + newY);
             }
@@ -203,13 +171,11 @@ public class ScreenGame extends ScreenAdapter   {
         // Двигаем маленькие камни вниз на фиксированное расстояние
         float dropDistance = 70f; // Фиксированное расстояние для движения в пикселях
         for (SmallStoneObject s : smallStoneArray) {// Не двигаем захваченный камень
-                float nx = s.body.getPosition().x;
-                float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
-                s.body.setTransform(nx, ny, s.body.getAngle());
+            float nx = s.body.getPosition().x;
+            float ny = s.body.getPosition().y - (dropDistance * GameSettings.SCALE);
+            s.body.setTransform(nx, ny, s.body.getAngle());
         }
-        alpObject.body.setTransform(alpObject.body.getPosition().x,
-                alpObject.body.getPosition().y-dropDistance*GameSettings.SCALE,
-                alpObject.body.getAngle());
+        alpObject.body.setTransform(alpObject.body.getPosition().x, alpObject.body.getPosition().y - dropDistance * GameSettings.SCALE, alpObject.body.getAngle());
 
         // Двигаем гору на фиксированное расстояние
         mountainObject.move();
@@ -248,6 +214,7 @@ public class ScreenGame extends ScreenAdapter   {
             tryGrabStone(targetTouchPos, targetIsRightSide);
         }
     }
+
     private void handleInput() {
 
         if (Gdx.input.justTouched()) {
@@ -258,7 +225,7 @@ public class ScreenGame extends ScreenAdapter   {
                     if (inventoryButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                         gameSession.pauseGame();
                         alpObject.freeze();
-                        for(FallStoneObject stoneObject:stoneArray){
+                        for (FallStoneObject stoneObject : stoneArray) {
                             stoneObject.freeze();
                         }
                         break;
@@ -278,11 +245,10 @@ public class ScreenGame extends ScreenAdapter   {
                                 targetStone = smallStone;
                                 targetIsRightSide = isRightSide;
                                 targetTouchPos = new Vector3(myGdxGame.touch);
-                                if (targetIsRightSide){
-                                    alpObject.move(new Vector3(targetStone.getX()-targetStone.getWidth()/2f,targetStone.getY(),0));
-                                }
-                                else {
-                                    alpObject.move(new Vector3(targetStone.getX()+targetStone.getWidth()/2f,targetStone.getY(),0));
+                                if (targetIsRightSide) {
+                                    alpObject.move(new Vector3(targetStone.getX() - targetStone.getWidth() / 2f, targetStone.getY(), 0));
+                                } else {
+                                    alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
                                 }
 
                                 mountainObject.startMoving();
@@ -298,11 +264,10 @@ public class ScreenGame extends ScreenAdapter   {
                                     targetStone = smallStone;
                                     targetIsRightSide = isRightSide;
                                     targetTouchPos = new Vector3(myGdxGame.touch);
-                                    if (targetIsRightSide){
-                                        alpObject.move(new Vector3(targetStone.getX()-targetStone.getWidth()/2f,targetStone.getY(),0));
-                                    }
-                                    else {
-                                        alpObject.move(new Vector3(targetStone.getX()+targetStone.getWidth()/2f,targetStone.getY(),0));
+                                    if (targetIsRightSide) {
+                                        alpObject.move(new Vector3(targetStone.getX() - targetStone.getWidth() / 2f, targetStone.getY(), 0));
+                                    } else {
+                                        alpObject.move(new Vector3(targetStone.getX() + targetStone.getWidth() / 2f, targetStone.getY(), 0));
                                     }
 
                                     mountainObject.startMoving();
@@ -320,7 +285,7 @@ public class ScreenGame extends ScreenAdapter   {
                     if (continueButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
                         gameSession.resumeGame();
                         alpObject.unfreeze();
-                        for(FallStoneObject stone:  stoneArray){
+                        for (FallStoneObject stone : stoneArray) {
                             stone.unfreeze();
                         }
                     } else if (homeButton.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
@@ -347,7 +312,7 @@ public class ScreenGame extends ScreenAdapter   {
         for (FallStoneObject stone : stoneArray) stone.draw(myGdxGame.batch);
         groundObject.draw(myGdxGame.batch);
         alpObject.draw(myGdxGame.batch);
-        for(SmallStoneObject smallStone: smallStoneArray) smallStone.draw(myGdxGame.batch);
+        for (SmallStoneObject smallStone : smallStoneArray) smallStone.draw(myGdxGame.batch);
         topBlackoutView.draw(myGdxGame.batch);
         scoreTextView.draw(myGdxGame.batch);
         liveView.draw(myGdxGame.batch);
@@ -366,12 +331,13 @@ public class ScreenGame extends ScreenAdapter   {
         }
         myGdxGame.batch.end();
     }
+
     public void dispose() {
         mountainObject.dispose();
         alpObject.dispose();
         groundObject.dispose();
-        for(SmallStoneObject smallStone: smallStoneArray) smallStone.dispose();
-        for (FallStoneObject stone: stoneArray) {
+        for (SmallStoneObject smallStone : smallStoneArray) smallStone.dispose();
+        for (FallStoneObject stone : stoneArray) {
             stone.dispose();
         }
         topBlackoutView.dispose();
@@ -389,7 +355,8 @@ public class ScreenGame extends ScreenAdapter   {
         for (int i = 0; i < stoneArray.size(); i++) {
             if (!stoneArray.get(i).isAlive()) {
                 //gameSession.destructionRegistration();
-                if (myGdxGame.audioManager.isSoundOn) myGdxGame.audioManager.stoneStoneSound.play(0.2f);
+                if (myGdxGame.audioManager.isSoundOn)
+                    myGdxGame.audioManager.stoneStoneSound.play(0.2f);
             }
             if (!stoneArray.get(i).isInFrame() || !stoneArray.get(i).isAlive()) {
                 myGdxGame.world.destroyBody(stoneArray.get(i).body);
@@ -412,17 +379,12 @@ public class ScreenGame extends ScreenAdapter   {
         if (alpObject != null) {
             myGdxGame.world.destroyBody(alpObject.body);
         }
-        mountainObject=new MountainObject(0,0,GameSettings.MOUNTAIN_WIDTH,GameSettings.MOUNTAIN_HEIGHT,GameResources.MOUNTAINS_IMG_PATH);
-        groundObject = new GroundObject(GameSettings.SCREEN_WIDTH/2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
-        alpObject = new AlpObject(
-                GameSettings.SCREEN_WIDTH / 2, 150,
-                GameSettings.ALP_WIDTH, GameSettings.ALP_HEIGHT,
-                GameResources.ALP_IMG_PATH,
-                myGdxGame.world
-        );
+        mountainObject = new MountainObject(0, 0, GameSettings.MOUNTAIN_WIDTH, GameSettings.MOUNTAIN_HEIGHT, GameResources.MOUNTAINS_IMG_PATH);
+        groundObject = new GroundObject(GameSettings.SCREEN_WIDTH / 2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
+        alpObject = new AlpObject(GameSettings.SCREEN_WIDTH / 2, 150, GameSettings.ALP_WIDTH, GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH, myGdxGame.world);
         gameSession.startGame();
         hasMountainMoved = false;
-        hasStonesDrown=true;
+        hasStonesDrown = true;
     }
 
     private void checkAndGrab() {
@@ -450,7 +412,7 @@ public class ScreenGame extends ScreenAdapter   {
     private void tryGrabStone(Vector3 touchPos, boolean flag) {
 
         for (SmallStoneObject smallStone : smallStoneArray) {
-            if (smallStone == targetStone && smallStone.body!=null) {
+            if (smallStone == targetStone && smallStone.body != null) {
                 if (alpObject.body.getWorld() == null || smallStone.body.getWorld() == null) {
                     waitingForGrab = false;
                     return;
@@ -473,11 +435,10 @@ public class ScreenGame extends ScreenAdapter   {
                 // переводим в метры для Box2D (body positions)
                 Vector2 grabPointMeters = new Vector2(grabXpix * GameSettings.SCALE, grabYpix * GameSettings.SCALE);
                 Vector2 alpPointMeters = new Vector2(alpHandXpix * GameSettings.SCALE, alpHandYpix * GameSettings.SCALE);
-                grabManager.grab(alpObject.body, smallStone.body, grabPointMeters,alpPointMeters);
+                grabManager.grab(alpObject.body, smallStone.body, grabPointMeters, alpPointMeters);
                 System.out.println("Grabbed");
                 myGdxGame.audioManager.stoneDoodleSound.play(0.2f);
                 gameSession.climbingRegistration();
-
 
 
                 isGrabbing = true;

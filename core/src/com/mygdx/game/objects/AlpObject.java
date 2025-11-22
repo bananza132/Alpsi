@@ -10,21 +10,23 @@ import com.mygdx.game.GameSettings;
 
 public class AlpObject extends GameObject {
     int livesLeft;
-    private boolean isMovingToStone = false;
+    private final boolean isMovingToStone = false;
     private SmallStoneObject targetStone;
     private boolean isFrozen = false;
-    private Vector2 frozenVelocity = new Vector2();
+    private final Vector2 frozenVelocity = new Vector2();
     private float frozenAngularVelocity = 0;
-    private Texture leftTexture;
-    private Texture rightTexture;
+    private final Texture leftTexture;
+    private final Texture rightTexture;
+
     public AlpObject(int x, int y, int width, int height, String texturePath, World world) {
-        super(texturePath, x, y, width, height, GameSettings.ALP_BIT,world  );
+        super(texturePath, x, y, width, height, GameSettings.ALP_BIT, world);
         leftTexture = new Texture(GameResources.ALP_LEFT_IMG_PATH);
         rightTexture = new Texture(GameResources.ALP_RIGHT_IMG_PATH);
         body.setLinearDamping(10);
         livesLeft = 3;
 
     }
+
     public void freeze() {
         if (body != null && !isFrozen) {
             frozenVelocity.set(body.getLinearVelocity());
@@ -68,6 +70,7 @@ public class AlpObject extends GameObject {
         if (body == null) return false;
         return body.getLinearVelocity().len() > 0.01f;
     }
+
     public void moveTowards(Vector2 target, float speed) {
         Vector2 pos = body.getPosition();
         Vector2 direction = target.sub(pos).nor();
@@ -88,13 +91,15 @@ public class AlpObject extends GameObject {
     public boolean isAlive() {
         return livesLeft > 0;
     }
-    public int getWidth(){
+
+    public int getWidth() {
         return width;
     }
 
-    public int getHeight(){
+    public int getHeight() {
         return height;
     }
+
     @Override
     public void dispose() {
         super.dispose();

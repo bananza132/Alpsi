@@ -67,6 +67,7 @@ public class MountainObject  {
         isMoving = false;
         moveDistance = 0;
     }
+
     public boolean isMoving() {
         return isMoving;
     }

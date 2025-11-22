@@ -33,7 +33,7 @@ public class ButtonView extends View {
     public ButtonView(float x, float y, float width, float height, String texturePath) {
         super(x, y, width, height);
 
-        texture  = new Texture(texturePath);
+        texture = new Texture(texturePath);
     }
 
     @Override

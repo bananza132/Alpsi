@@ -10,8 +10,8 @@ public class GameSession {
     long nextStoneSpawnTime;
     long sessionStartTime;
     long pauseStartTime;
-    private int score;
     int climbedStonesNumber;
+    private int score;
 
     public GameSession() {
     }
@@ -19,10 +19,9 @@ public class GameSession {
     public void startGame() {
         state = GameState.PLAYING;
         sessionStartTime = TimeUtils.millis();
-        nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
-                * getStonePeriodCoolDown());
-        score=0;
-        climbedStonesNumber=0;
+        nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
+        score = 0;
+        climbedStonesNumber = 0;
     }
 
     public void pauseGame() {
@@ -34,6 +33,7 @@ public class GameSession {
         state = GameState.PLAYING;
         sessionStartTime += TimeUtils.millis() - pauseStartTime;
     }
+
     public void endGame() {
         updateScore();
         state = GameState.ENDED;
@@ -48,6 +48,7 @@ public class GameSession {
         recordsTable.add(foundIdx, getScore());
         MemoryManager.saveTableOfRecords(recordsTable);
     }
+
     public void climbingRegistration() {
         climbedStonesNumber += 1;
     }
@@ -62,8 +63,7 @@ public class GameSession {
 
     public boolean shouldSpawnStone() {
         if (nextStoneSpawnTime <= TimeUtils.millis()) {
-            nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN
-                    * getStonePeriodCoolDown());
+            nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
             return true;
         }
         return false;

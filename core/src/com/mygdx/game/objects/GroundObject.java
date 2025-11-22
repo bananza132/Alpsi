@@ -8,10 +8,11 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
 
-public class GroundObject extends GameObject{
-    boolean isMoving=false;
+public class GroundObject extends GameObject {
+    boolean isMoving = false;
+
     public GroundObject(int x, int y, int width, int height, String texturePath, World world) {
-        super(texturePath, x, y, width, height, GameSettings.GROUND_BIT,world  );
+        super(texturePath, x, y, width, height, GameSettings.GROUND_BIT, world);
         body = createBody(x, y, world);
     }
 
@@ -42,8 +43,9 @@ public class GroundObject extends GameObject{
     }
 
     public void draw(SpriteBatch batch) {
-        batch.draw(texture, getX()-width/2f, getY(), width, height/2f);
+        batch.draw(texture, getX() - width / 2f, getY(), width, height / 2f);
     }
+
     public void startMoving() {
         isMoving = true;
     }
@@ -51,7 +53,8 @@ public class GroundObject extends GameObject{
     public void stopMoving() {
         isMoving = false;
     }
-    public void  move(){
-        body.setTransform(body.getPosition().x,-height*2 * GameSettings.SCALE,0);
+
+    public void move() {
+        body.setTransform(body.getPosition().x, -height * 2 * GameSettings.SCALE, 0);
     }
 }

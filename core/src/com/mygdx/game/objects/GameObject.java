@@ -12,17 +12,18 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
 
 public class GameObject {
-    Texture texture;
-    int width, height;
     public Body body;
     public short cBits;
+    Texture texture;
+    int width, height;
+
     GameObject(String texturePath, int x, int y, int width, int height, short cBits, World world) {
         this.width = width;
         this.height = height;
         this.cBits = cBits;
 
         texture = new Texture(texturePath);
-        if(cBits != GameSettings.GROUND_BIT) body = createBody(x, y, world);
+        if (cBits != GameSettings.GROUND_BIT) body = createBody(x, y, world);
     }
 
     public void draw(SpriteBatch batch) {
@@ -33,13 +34,14 @@ public class GameObject {
         return (body.getPosition().x / GameSettings.SCALE);
     }
 
+    public void setX(float x) {
+        body.setTransform(x * GameSettings.SCALE, body.getPosition().y, 0);
+    }
+
     public float getY() {
         return (body.getPosition().y / GameSettings.SCALE);
     }
 
-    public void setX(float x) {
-        body.setTransform(x * GameSettings.SCALE, body.getPosition().y, 0);
-    }
     public void setY(float y) {
         body.setTransform(body.getPosition().x, y * GameSettings.SCALE, 0);
     }
@@ -50,7 +52,7 @@ public class GameObject {
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef();
 
-        if (cBits == GameSettings.SMALL_STONE_BIT){
+        if (cBits == GameSettings.SMALL_STONE_BIT) {
             def.type = BodyDef.BodyType.KinematicBody;
             def.fixedRotation = true;
             float[] verts = {-30, 25, -46, 0, -46, -8, -30, -25, 29, -25, 46, -8, 46, 8, 29, 25};
@@ -76,8 +78,7 @@ public class GameObject {
 
             body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
             return body;
-        }
-        else if (cBits == GameSettings.ALP_BIT){
+        } else if (cBits == GameSettings.ALP_BIT) {
             def.type = BodyDef.BodyType.DynamicBody;
             def.fixedRotation = true;
             float[] verts = {-73, 44, -28, -100, 28, -100, 73, 44, 5, 100, -5, 100};
@@ -100,8 +101,7 @@ public class GameObject {
 
             body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
             return body;
-        }
-        else{
+        } else {
             def.type = BodyDef.BodyType.DynamicBody;
             def.fixedRotation = true;
             Body body = world.createBody(def);
@@ -115,7 +115,7 @@ public class GameObject {
             fixtureDef.friction = 1f;
             fixtureDef.filter.categoryBits = cBits;
             fixtureDef.isSensor = false;
-            if(cBits==GameSettings.STONE_BIT){
+            if (cBits == GameSettings.STONE_BIT) {
                 fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
             }
             Fixture fixture = body.createFixture(fixtureDef);
@@ -127,7 +127,7 @@ public class GameObject {
         }
     }
 
-    public void dispose (){
+    public void dispose() {
         texture.dispose();
-   }
+    }
 }

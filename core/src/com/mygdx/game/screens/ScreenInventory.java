@@ -5,7 +5,8 @@ import com.mygdx.game.MyGdxGame;
 
 public class ScreenInventory extends ScreenAdapter {
     MyGdxGame myGdxGame;
-    public ScreenInventory(MyGdxGame myGdxGame){
-        this.myGdxGame=myGdxGame;
+
+    public ScreenInventory(MyGdxGame myGdxGame) {
+        this.myGdxGame = myGdxGame;
     }
 }

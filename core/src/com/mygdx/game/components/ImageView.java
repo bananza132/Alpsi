@@ -9,8 +9,8 @@ public class ImageView extends View {
     public ImageView(float x, float y, String imagePath) {
         super(x, y);
         texture = new Texture(imagePath);
-        this.width = texture.getWidth() ;
-        this.height = texture.getHeight() ;
+        this.width = texture.getWidth();
+        this.height = texture.getHeight();
     }
 
     @Override

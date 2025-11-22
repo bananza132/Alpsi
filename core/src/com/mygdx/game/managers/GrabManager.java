@@ -7,7 +7,7 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 public class GrabManager {
-    private World world;
+    private final World world;
     private RevoluteJoint grabJoint;
     private Body grabbedBody;
 
@@ -15,7 +15,7 @@ public class GrabManager {
         this.world = world;
     }
 
-    public void grab(Body dynamicBody, Body kinematicBody, Vector2 grabPoint,Vector2 alpPoint) {
+    public void grab(Body dynamicBody, Body kinematicBody, Vector2 grabPoint, Vector2 alpPoint) {
         if (grabJoint != null) {
             release();
         }

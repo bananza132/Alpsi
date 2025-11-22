@@ -25,8 +25,7 @@ public class ContactManager {
                 short cDef = fixA.getFilterData().categoryBits;
                 short cDef2 = fixB.getFilterData().categoryBits;
 
-                if (cDef == GameSettings.STONE_BIT && cDef2 == GameSettings.ALP_BIT
-                        || cDef == GameSettings.ALP_BIT && cDef2 == GameSettings.STONE_BIT) {
+                if (cDef == GameSettings.STONE_BIT && cDef2 == GameSettings.ALP_BIT || cDef == GameSettings.ALP_BIT && cDef2 == GameSettings.STONE_BIT) {
 
                     ((GameObject) fixA.getUserData()).hit();
                     ((GameObject) fixB.getUserData()).hit();
