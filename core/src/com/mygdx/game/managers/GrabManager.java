@@ -21,20 +21,16 @@ public class GrabManager {
         }
 
         RevoluteJointDef jointDef = new RevoluteJointDef();
-        jointDef.bodyA = dynamicBody;      // Динамическое тело (Alp)
-        jointDef.bodyB = kinematicBody;    // Кинематическое тело (SmallStone)
-        jointDef.collideConnected = false; // Тела не сталкиваются друг с другом
-
-        // Точка захвата в локальных координатах каждого тела
+        jointDef.bodyA = dynamicBody;
+        jointDef.bodyB = kinematicBody;
+        jointDef.collideConnected = false;
         jointDef.localAnchorA.set(dynamicBody.getLocalPoint(alpPoint));
         jointDef.localAnchorB.set(kinematicBody.getLocalPoint(grabPoint));
 
-        // Ограничиваем угол вращения для более стабильного захвата
         jointDef.enableLimit = true;
         jointDef.lowerAngle = -0.1f;
         jointDef.upperAngle = 0.1f;
 
-        // Мотор для сопротивления вращению
         jointDef.enableMotor = true;
         jointDef.motorSpeed = 0f;
         jointDef.maxMotorTorque = 1000f;

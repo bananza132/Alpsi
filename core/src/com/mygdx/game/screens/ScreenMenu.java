@@ -58,7 +58,7 @@ public class ScreenMenu extends ScreenAdapter {
                     Gdx.input.isTouched(i);
                 }
                 try {
-                    Thread.sleep(200); // ~1 кадр
+                    Thread.sleep(200);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

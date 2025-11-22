@@ -19,26 +19,26 @@ public class GroundObject extends GameObject {
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef();
 
-        def.type = BodyDef.BodyType.StaticBody; // тип тела, который имеет массу и может быть подвинут под действием сил
-        def.fixedRotation = true; // запрещаем телу вращаться вокруг своей оси
+        def.type = BodyDef.BodyType.StaticBody;
+        def.fixedRotation = true;
         Body body = world.createBody(def);
 
         PolygonShape polygonShape = new PolygonShape();
         float halfWidth = (width / 2f) * GameSettings.SCALE;
         float halfHeight = (height / 2f) * GameSettings.SCALE;
-        polygonShape.setAsBox(halfWidth, halfHeight); // определяем радиус круга коллайдера
+        polygonShape.setAsBox(halfWidth, halfHeight);
 
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polygonShape; // устанавливаем коллайдер
-        fixtureDef.density = 0f; // устанавливаем плотность тела
-        fixtureDef.friction = 1f; // устанвливаем коэффициент трения
+        fixtureDef.shape = polygonShape;
+        fixtureDef.density = 0f;
+        fixtureDef.friction = 1f;
         fixtureDef.filter.categoryBits = cBits;
         fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
 
-        body.createFixture(fixtureDef); // создаём fixture по описанному нами определению
-        polygonShape.dispose(); // так как коллайдер уже скопирован в fixutre, то circleShape может быть отчищена, чтобы не забивать оперативную память.
+        body.createFixture(fixtureDef);
+        polygonShape.dispose();
 
-        body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0); // устанавливаем позицию тела по координатным осям и угол поворота
+        body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
         return body;
     }
 

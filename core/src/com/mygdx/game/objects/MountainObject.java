@@ -45,7 +45,7 @@ public class MountainObject  {
         moveDistance += speed;
 
         if (moveDistance >= maxMoveDistance) {
-            stopMoving(); // Останавливаем движение
+            stopMoving();
         }
         if (texture1Y <= -GameSettings.SCREEN_HEIGHT) {
             texture1Y= GameSettings.SCREEN_HEIGHT;
