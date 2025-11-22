@@ -78,7 +78,7 @@ public class ScreenGame extends ScreenAdapter {
         mountainObject = new MountainObject(0, 0, GameSettings.MOUNTAIN_WIDTH, GameSettings.MOUNTAIN_HEIGHT, GameResources.MOUNTAINS_IMG_PATH);
         stoneArray = new ArrayList<>();
         smallStoneArray = new ArrayList<>();
-        int countSmallStones = 16;
+        int countSmallStones = 20;
         for (int i = 0; i < countSmallStones; i++) {
             SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
@@ -147,14 +147,19 @@ public class ScreenGame extends ScreenAdapter {
     }
 
     private void checkAndRespawnSmallStones() {
+        float maxY = -GameSettings.SCREEN_HEIGHT;
+        for(SmallStoneObject stone:smallStoneArray){
+            if(stone.getY() > maxY){
+                maxY=stone.getY();
+            }
+        }
         for (int i = 0; i < smallStoneArray.size(); i++) {
             SmallStoneObject stone = smallStoneArray.get(i);
 
             if (stone.getY() + stone.getHeight() < 0) {
                 Random random = new Random();
                 float newX = (i % 2) * 500 + random.nextInt(200);
-                float newY = GameSettings.SCREEN_HEIGHT + random.nextInt(100) + 100;
-
+                float newY = maxY + 100 + random.nextInt(50);
                 stone.body.setTransform(newX * GameSettings.SCALE, newY * GameSettings.SCALE, 0);
 
                 System.out.println("Small stone respawned at: " + newX + ", " + newY);
@@ -406,7 +411,7 @@ public class ScreenGame extends ScreenAdapter {
         groundObject = new GroundObject(GameSettings.SCREEN_WIDTH / 2, 0, 720, 100, GameResources.GROUND_IMG_PATH, myGdxGame.world);
         alpObject = new AlpObject(GameSettings.SCREEN_WIDTH / 2, 150, GameSettings.ALP_WIDTH, GameSettings.ALP_HEIGHT, GameResources.ALP_IMG_PATH, myGdxGame.world);
         smallStoneArray=new ArrayList<>();
-        int countSmallStones = 16;
+        int countSmallStones = 20;
         for (int i = 0; i < countSmallStones; i++) {
             SmallStoneObject smallStoneObject = new SmallStoneObject((i % 2) * 500 + new Random().nextInt(200), (i / 2 + 1) * 200 + new Random().nextInt(150), GameSettings.SMALL_STONE_WIDTH, GameSettings.SMALL_STONE_HEIGHT, GameResources.SMALL_STONE_IMG_PATH, myGdxGame.world);
             smallStoneArray.add(smallStoneObject);
