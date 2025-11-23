@@ -3,6 +3,7 @@ package com.mygdx.game.managers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.utils.Json;
+import com.mygdx.game.GameDifficult;
 
 import java.util.ArrayList;
 
@@ -42,6 +43,22 @@ public class MemoryManager {
         Json json = new Json();
         ArrayList<Integer> table = json.fromJson(ArrayList.class, scores);
         return table;
+    }
+
+    public static void saveDifficult(GameDifficult difficult) {
+        if (difficult == GameDifficult.LIGHT) preferences.putInteger("difficult", 1);
+        else if (difficult == GameDifficult.MEDIUM) preferences.putInteger("difficult", 2);
+        else if (difficult == GameDifficult.HARD) preferences.putInteger("difficult", 3);
+        preferences.flush();
+    }
+
+    public static GameDifficult loadDifficult() {
+        int difficult = preferences.getInteger("difficult", 1);
+         if (difficult == 2) return GameDifficult.MEDIUM;
+        else if (difficult == 3) return GameDifficult.HARD;
+        else return GameDifficult.LIGHT;
+
+
     }
 
 }

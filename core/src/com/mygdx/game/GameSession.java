@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 public class GameSession {
     public GameState state;
+    public GameDifficult difficult;
     private long nextStoneSpawnTime;
     private long sessionStartTime;
     private long pauseStartTime;
@@ -18,8 +19,14 @@ public class GameSession {
 
     public void startGame() {
         state = GameState.PLAYING;
+        difficult = MemoryManager.loadDifficult();
         sessionStartTime = TimeUtils.millis();
-        nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
+        if (difficult == GameDifficult.MEDIUM)
+            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
+        else if (difficult == GameDifficult.HARD)
+            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * 1.5 * getStonePeriodCoolDown());
+        else
+            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * 0.75 * getStonePeriodCoolDown());
         score = 0;
         climbedStonesNumber = 0;
     }
@@ -70,7 +77,12 @@ public class GameSession {
     }
 
     private float getStonePeriodCoolDown() {
+        if ((float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000) > 1)
+            return 1f;
         return (float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
+    }
+    public void changeDifficult(GameDifficult difficult){
+        this.difficult=difficult;
     }
 
 }

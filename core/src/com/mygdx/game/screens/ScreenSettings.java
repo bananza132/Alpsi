@@ -5,7 +5,9 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.mygdx.game.GameDifficult;
 import com.mygdx.game.GameResources;
+import com.mygdx.game.GameSession;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.components.BackgroundView;
 import com.mygdx.game.components.ButtonView;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 
 public class ScreenSettings extends ScreenAdapter {
     private final MyGdxGame myGdxGame;
+    private final GameSession gameSession;
 
     private final BackgroundView backgroundView;
     private final TextView titleTextView;
@@ -24,10 +27,12 @@ public class ScreenSettings extends ScreenAdapter {
     private final ButtonView returnButton;
     private final TextView musicSettingView;
     private final TextView soundSettingView;
+    private final TextView difficultSettingView;
     private final TextView clearSettingView;
 
     public ScreenSettings(MyGdxGame myGdxGame) {
         this.myGdxGame = myGdxGame;
+        gameSession = new GameSession();
 
         backgroundView = new BackgroundView(GameResources.BACKGROUND_MENU_IMG_PATH);
         titleTextView = new TextView(myGdxGame.largeWhiteFont, 256, 956, "Settings");
@@ -38,6 +43,7 @@ public class ScreenSettings extends ScreenAdapter {
 
         soundSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 658, "sound: " + translateStateToText(MemoryManager.loadIsSoundOn()));
 
+        difficultSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 540, "difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
         returnButton = new ButtonView(280, 447, 160, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "return");
 
     }
@@ -60,6 +66,7 @@ public class ScreenSettings extends ScreenAdapter {
         musicSettingView.draw(myGdxGame.batch);
         soundSettingView.draw(myGdxGame.batch);
         clearSettingView.draw(myGdxGame.batch);
+        difficultSettingView.draw(myGdxGame.batch);
 
         myGdxGame.batch.end();
     }
@@ -85,11 +92,35 @@ public class ScreenSettings extends ScreenAdapter {
                 soundSettingView.setText("sound: " + translateStateToText(MemoryManager.loadIsSoundOn()));
                 myGdxGame.audioManager.updateSoundFlag();
             }
+            if (difficultSettingView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
+                if (gameSession.difficult==GameDifficult.MEDIUM){
+                    MemoryManager.saveDifficult(GameDifficult.HARD);
+                    difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
+                    gameSession.changeDifficult(GameDifficult.HARD);
+                }
+                else if (gameSession.difficult==GameDifficult.HARD){
+                    MemoryManager.saveDifficult(GameDifficult.LIGHT);
+                    difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
+                    gameSession.changeDifficult(GameDifficult.LIGHT);
+                }
+                else {
+                    MemoryManager.saveDifficult(GameDifficult.MEDIUM);
+                    difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
+                    gameSession.changeDifficult(GameDifficult.MEDIUM);
+                }
+            }
         }
     }
 
     private String translateStateToText(boolean state) {
         return state ? "ON" : "OFF";
+    }
+
+    private String translateDifficultToText(GameDifficult difficult) {
+        if (difficult == GameDifficult.MEDIUM) return "medium";
+        else if (difficult == GameDifficult.HARD) return "hard";
+        else return "light";
+
     }
 
 }
