@@ -32,6 +32,19 @@ import java.util.Random;
 public class ScreenGame extends ScreenAdapter {
     private final MyGdxGame myGdxGame;
     private final GameSession gameSession;
+    private final ImageView topBlackoutView;
+    private final LiveView liveView;
+    private final TextView scoreTextView;
+    private final ButtonView inventoryButton;
+    private final ImageView fullBlackoutView;
+    private final TextView inventoryTextView;
+    private final ButtonView homeButton;
+    private final ButtonView continueButton;
+    private final ImageView amogusImage;
+    private final BackgroundView backgroundView;
+    private final TextView recordsTextView;
+    private final RecordsListView recordsListView;
+    private final ButtonView homeButton2;
     private ContactManager contactManager;
     private GrabManager grabManager;
     private AlpObject alpObject;
@@ -39,23 +52,6 @@ public class ScreenGame extends ScreenAdapter {
     private GroundObject groundObject;
     private ArrayList<FallStoneObject> stoneArray;
     private ArrayList<SmallStoneObject> smallStoneArray;
-
-    private final ImageView topBlackoutView;
-    private final LiveView liveView;
-    private final TextView scoreTextView;
-    private final ButtonView inventoryButton;
-
-    private final ImageView fullBlackoutView;
-    private final TextView inventoryTextView;
-    private final ButtonView homeButton;
-    private final ButtonView continueButton;
-    private final ImageView amogusImage;
-
-    private final BackgroundView backgroundView;
-    private final TextView recordsTextView;
-    private final RecordsListView recordsListView;
-    private final ButtonView homeButton2;
-
     private SmallStoneObject pastStone;
     private SmallStoneObject targetStone;
     private boolean targetIsRightSide;
@@ -245,10 +241,8 @@ public class ScreenGame extends ScreenAdapter {
     private void moveAlpTowardsStone() {
         if (!waitingForGrab || targetStone == null || alpObject == null) return;
 
-        Vector2 alpPos = new Vector2(alpObject.getX() * GameSettings.SCALE,
-                alpObject.getY() * GameSettings.SCALE);
-        Vector2 targetStoneCenter = new Vector2(targetStone.getX() * GameSettings.SCALE,
-                targetStone.getY() * GameSettings.SCALE);
+        Vector2 alpPos = new Vector2(alpObject.getX() * GameSettings.SCALE, alpObject.getY() * GameSettings.SCALE);
+        Vector2 targetStoneCenter = new Vector2(targetStone.getX() * GameSettings.SCALE, targetStone.getY() * GameSettings.SCALE);
         float halfWidthMeters = (targetStone.getWidth() * GameSettings.SCALE) / 2f;
 
         Vector2 targetPoint;
@@ -308,16 +302,13 @@ public class ScreenGame extends ScreenAdapter {
 
     private void moveEnvironment() {
         if (isGrabbing && !movementTriggered && alpObject.getY() - pastAlpHeight > 25f) {
-            float dropDistance;
-            if (alpObject.getY() - pastAlpHeight < 50f) dropDistance = 60f;
-            else dropDistance = 200f;
+            float dropDistance = alpObject.getY() / 3f;
             for (SmallStoneObject s : smallStoneArray) {
                 float nx = s.getX() * GameSettings.SCALE;
                 float ny = s.getY() * GameSettings.SCALE - (dropDistance * GameSettings.SCALE);
                 s.setPosition(nx, ny);
             }
-            alpObject.setPosition(alpObject.getX() * GameSettings.SCALE,
-                    alpObject.getY() * GameSettings.SCALE - dropDistance * GameSettings.SCALE);
+            alpObject.setPosition(alpObject.getX() * GameSettings.SCALE, alpObject.getY() * GameSettings.SCALE - dropDistance * GameSettings.SCALE);
             mountainObject.startMoving();
             if (!hasMountainMoved) {
                 groundObject.move();
