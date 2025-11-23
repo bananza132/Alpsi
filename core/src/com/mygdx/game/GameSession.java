@@ -7,10 +7,10 @@ import java.util.ArrayList;
 
 public class GameSession {
     public GameState state;
-    long nextStoneSpawnTime;
-    long sessionStartTime;
-    long pauseStartTime;
-    int climbedStonesNumber;
+    private long nextStoneSpawnTime;
+    private long sessionStartTime;
+    private long pauseStartTime;
+    private int climbedStonesNumber;
     private int score;
 
     public GameSession() {

@@ -8,15 +8,19 @@ import com.mygdx.game.GameSettings;
 import java.util.Random;
 
 public class FallStoneObject extends GameObject {
-    int livesLeft;
-    private boolean isFrozen = false;
-    private final Vector2 frozenVelocity = new Vector2();
-    private float frozenAngularVelocity = 0;
+    private int livesLeft;
+    private boolean isFrozen;
+    private Vector2 frozenVelocity;
+    private float frozenAngularVelocity;
 
     public FallStoneObject(int width, int height, String texturePath, World world) {
         super(texturePath, width / 2 + (new Random()).nextInt((GameSettings.SCREEN_WIDTH - width)), GameSettings.SCREEN_HEIGHT + height / 2, width, height, GameSettings.STONE_BIT, world);
         body.setLinearVelocity(new Vector2(0, -GameSettings.STONE_VELOCITY));
         livesLeft = 1;
+        isFrozen = false;
+        frozenVelocity = new Vector2();
+        frozenAngularVelocity = 0;
+
     }
 
     public void freeze() {
@@ -39,7 +43,7 @@ public class FallStoneObject extends GameObject {
     }
 
     public boolean isInFrame() {
-        return getY() + height / 2 > 0;
+        return getY() + height / 2f > 0;
     }
 
     @Override

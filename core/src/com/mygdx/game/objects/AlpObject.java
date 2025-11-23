@@ -9,12 +9,10 @@ import com.mygdx.game.GameResources;
 import com.mygdx.game.GameSettings;
 
 public class AlpObject extends GameObject {
-    int livesLeft;
-    private final boolean isMovingToStone = false;
-    private SmallStoneObject targetStone;
-    private boolean isFrozen = false;
-    private final Vector2 frozenVelocity = new Vector2();
-    private float frozenAngularVelocity = 0;
+    private int livesLeft;
+    private boolean isFrozen;
+    private Vector2 frozenVelocity;
+    private float frozenAngularVelocity;
     private final Texture leftTexture;
     private final Texture rightTexture;
 
@@ -24,6 +22,9 @@ public class AlpObject extends GameObject {
         rightTexture = new Texture(GameResources.ALP_RIGHT_IMG_PATH);
         body.setLinearDamping(10);
         livesLeft = 3;
+        isFrozen = false;
+        frozenVelocity = new Vector2();
+        frozenAngularVelocity = 0;
 
     }
 
@@ -41,18 +42,16 @@ public class AlpObject extends GameObject {
             body.setType(BodyDef.BodyType.DynamicBody);
             body.setLinearVelocity(frozenVelocity);
             body.setAngularVelocity(frozenAngularVelocity);
-
             isFrozen = false;
         }
     }
 
-    public void move(Vector3 target) {
-        if (target.x - getX() < 0) {
+    public void move(Vector3 target, boolean isRightSide) {
+        if (!isRightSide) {
             texture = leftTexture;
         } else {
             texture = rightTexture;
         }
-
         Vector2 targetMeters = new Vector2(target.x * GameSettings.SCALE, target.y * GameSettings.SCALE);
         Vector2 alpPosMeters = body.getPosition();
         Vector2 dir = targetMeters.cpy().sub(alpPosMeters);
@@ -62,22 +61,14 @@ public class AlpObject extends GameObject {
             return;
         }
         dir.nor();
-        float speed = 100f;
-        body.setLinearVelocity(dir.scl(speed));
-    }
-
-    public boolean isMoving() {
-        if (body == null) return false;
-        return body.getLinearVelocity().len() > 0.01f;
+        body.setLinearVelocity(dir.scl(GameSettings.ALP_SPEED));
     }
 
     public void moveTowards(Vector2 target, float speed) {
         Vector2 pos = body.getPosition();
         Vector2 direction = target.sub(pos).nor();
-
         body.setLinearVelocity(direction.scl(speed));
     }
-
 
     public int getLiveLeft() {
         return livesLeft;

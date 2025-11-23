@@ -10,7 +10,7 @@ import com.mygdx.game.GameSettings;
 import com.mygdx.game.objects.GameObject;
 
 public class ContactManager {
-    World world;
+    private final World world;
 
     public ContactManager(World world) {
         this.world = world;

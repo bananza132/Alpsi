@@ -30,7 +30,7 @@ public class MyGdxGame extends Game {
     public ScreenInventory screenInventory;
     public World world;
     public Vector3 touch;
-    float accumulator = 0;
+    private float accumulator = 0;
 
     @Override
     public void create() {
@@ -61,7 +61,6 @@ public class MyGdxGame extends Game {
             accumulator -= GameSettings.STEP_TIME;
             world.step(GameSettings.STEP_TIME, GameSettings.VELOCITY_ITERATIONS, GameSettings.POSITION_ITERATIONS);
         }
-
     }
 
     @Override

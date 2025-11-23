@@ -12,12 +12,12 @@ import com.mygdx.game.components.ButtonView;
 import com.mygdx.game.components.TextView;
 
 public class ScreenMenu extends ScreenAdapter {
-    MyGdxGame myGdxGame;
-    BackgroundView backgroundView;
-    TextView titleView;
-    ButtonView startButtonView;
-    ButtonView settingsButtonView;
-    ButtonView exitButtonView;
+    private final MyGdxGame myGdxGame;
+    private final BackgroundView backgroundView;
+    private final TextView titleView;
+    private final ButtonView startButtonView;
+    private final ButtonView settingsButtonView;
+    private final ButtonView exitButtonView;
 
     public ScreenMenu(MyGdxGame myGdxGame) {
         this.myGdxGame = myGdxGame;

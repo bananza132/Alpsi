@@ -6,13 +6,13 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class ButtonView extends View {
-    Texture texture;
-    BitmapFont bitmapFont;
+    private final Texture texture;
+    private BitmapFont bitmapFont;
 
-    String text;
+    private String text;
 
-    float textX;
-    float textY;
+    private float textX;
+    private float textY;
 
     public ButtonView(float x, float y, float width, float height, BitmapFont font, String texturePath, String text) {
         super(x, y, width, height);
@@ -32,7 +32,6 @@ public class ButtonView extends View {
 
     public ButtonView(float x, float y, float width, float height, String texturePath) {
         super(x, y, width, height);
-
         texture = new Texture(texturePath);
     }
 

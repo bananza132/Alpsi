@@ -16,15 +16,15 @@ import com.mygdx.game.managers.MemoryManager;
 import java.util.ArrayList;
 
 public class ScreenSettings extends ScreenAdapter {
-    MyGdxGame myGdxGame;
+    private final MyGdxGame myGdxGame;
 
-    BackgroundView backgroundView;
-    TextView titleTextView;
-    ImageView blackoutImageView;
-    ButtonView returnButton;
-    TextView musicSettingView;
-    TextView soundSettingView;
-    TextView clearSettingView;
+    private final BackgroundView backgroundView;
+    private final TextView titleTextView;
+    private final ImageView blackoutImageView;
+    private final ButtonView returnButton;
+    private final TextView musicSettingView;
+    private final TextView soundSettingView;
+    private final TextView clearSettingView;
 
     public ScreenSettings(MyGdxGame myGdxGame) {
         this.myGdxGame = myGdxGame;

@@ -37,8 +37,6 @@ public class GrabManager {
 
         grabJoint = (RevoluteJoint) world.createJoint(jointDef);
         grabbedBody = kinematicBody;
-
-        System.out.println("Grabbed small stone!");
     }
 
     public void release() {
@@ -46,15 +44,6 @@ public class GrabManager {
             world.destroyJoint(grabJoint);
             grabJoint = null;
             grabbedBody = null;
-            System.out.println("Released small stone!");
         }
-    }
-
-    public boolean isGrabbing() {
-        return grabJoint != null;
-    }
-
-    public Body getGrabbedBody() {
-        return grabbedBody;
     }
 }

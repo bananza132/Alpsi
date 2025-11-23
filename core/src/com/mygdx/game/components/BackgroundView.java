@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.game.GameSettings;
 
 public class BackgroundView extends View {
-    Texture texture;
+    private final Texture texture;
 
     public BackgroundView(String pathToTexture) {
         super(0, 0);

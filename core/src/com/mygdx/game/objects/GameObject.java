@@ -12,8 +12,8 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.GameSettings;
 
 public class GameObject {
-    public Body body;
-    public short cBits;
+    Body body;
+    short cBits;
     Texture texture;
     int width, height;
 
@@ -23,7 +23,7 @@ public class GameObject {
         this.cBits = cBits;
 
         texture = new Texture(texturePath);
-        if (cBits != GameSettings.GROUND_BIT) body = createBody(x, y, world);
+        body = createBody(x, y, world);
     }
 
     public void draw(SpriteBatch batch) {
@@ -46,83 +46,123 @@ public class GameObject {
         body.setTransform(body.getPosition().x, y * GameSettings.SCALE, 0);
     }
 
+    public Body getBody(){
+        return body;
+    }
+
+    public void setPosition(float x, float y){
+        body.setTransform(x, y, 0);
+    }
+
     public void hit() {
     }
 
     private Body createBody(float x, float y, World world) {
         BodyDef def = new BodyDef();
+        float[] vertsStone = {-30, 25, -46, 0, -46, -8, -30, -25, 29, -25, 46, -8, 46, 8, 29, 25};
+        float[] vertsAlp = {-73, 44, -28, -100, 28, -100, 73, 44, 5, 100, -5, 100};
+        Body createBody;
+        PolygonShape polygonShape;
+        CircleShape circleShape;
+        FixtureDef fixtureDef;
+        Fixture fixture;
 
-        if (cBits == GameSettings.SMALL_STONE_BIT) {
-            def.type = BodyDef.BodyType.KinematicBody;
-            def.fixedRotation = true;
-            float[] verts = {-30, 25, -46, 0, -46, -8, -30, -25, 29, -25, 46, -8, 46, 8, 29, 25};
-            for (int i = 0; i < verts.length; i++) {
-                verts[i] *= GameSettings.SCALE;
-            }
-            Body body = world.createBody(def);
+        switch(cBits){
+            case GameSettings.SMALL_STONE_BIT:
+                def.type = BodyDef.BodyType.KinematicBody;
+                def.fixedRotation = true;
+                for (int i = 0; i < vertsStone.length; i++) {
+                    vertsStone[i] *= GameSettings.SCALE;
+                }
+                createBody = world.createBody(def);
 
-            PolygonShape shape = new PolygonShape();
-            shape.set(verts);
+                polygonShape = new PolygonShape();
+                polygonShape.set(vertsStone);
 
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.shape = shape;
-            fixtureDef.density = 0.1f;
-            fixtureDef.friction = 1f;
-            fixtureDef.filter.categoryBits = cBits;
-            fixtureDef.isSensor = false;
+                fixtureDef = new FixtureDef();
+                fixtureDef.shape = polygonShape;
+                fixtureDef.density = 0.1f;
+                fixtureDef.friction = 1f;
+                fixtureDef.filter.categoryBits = cBits;
+                fixtureDef.isSensor = false;
 
-            Fixture fixture = body.createFixture(fixtureDef);
-            fixture.setUserData(this);
-            shape.dispose();
+                fixture = createBody.createFixture(fixtureDef);
+                fixture.setUserData(this);
+                polygonShape.dispose();
 
-            body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
-            return body;
-        } else if (cBits == GameSettings.ALP_BIT) {
-            def.type = BodyDef.BodyType.DynamicBody;
-            def.fixedRotation = true;
-            float[] verts = {-73, 44, -28, -100, 28, -100, 73, 44, 5, 100, -5, 100};
-            for (int i = 0; i < verts.length; i++) {
-                verts[i] *= GameSettings.SCALE;
-            }
-            Body body = world.createBody(def);
-            PolygonShape shape = new PolygonShape();
-            shape.set(verts);
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.shape = shape;
-            fixtureDef.density = 0.1f;
-            fixtureDef.friction = 1f;
-            fixtureDef.filter.categoryBits = cBits;
-            fixtureDef.isSensor = false;
-            fixtureDef.filter.maskBits = GameSettings.STONE_BIT  | GameSettings.GROUND_BIT;
-            Fixture fixture = body.createFixture(fixtureDef);
-            fixture.setUserData(this);
-            shape.dispose();
+                createBody.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
+                return createBody;
 
-            body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
-            return body;
-        } else {
-            def.type = BodyDef.BodyType.DynamicBody;
-            def.fixedRotation = true;
-            Body body = world.createBody(def);
+            case GameSettings.ALP_BIT:
+                def.type = BodyDef.BodyType.DynamicBody;
+                def.fixedRotation = true;
+                for (int i = 0; i < vertsAlp.length; i++) {
+                    vertsAlp[i] *= GameSettings.SCALE;
+                }
+                createBody = world.createBody(def);
+                polygonShape = new PolygonShape();
+                polygonShape.set(vertsAlp);
+                fixtureDef = new FixtureDef();
+                fixtureDef.shape = polygonShape;
+                fixtureDef.density = 0.1f;
+                fixtureDef.friction = 1f;
+                fixtureDef.filter.categoryBits = cBits;
+                fixtureDef.isSensor = false;
+                fixtureDef.filter.maskBits = GameSettings.STONE_BIT  | GameSettings.GROUND_BIT;
+                fixture = createBody.createFixture(fixtureDef);
+                fixture.setUserData(this);
+                polygonShape.dispose();
 
-            CircleShape circleShape = new CircleShape();
-            circleShape.setRadius(Math.max(width, height) * GameSettings.SCALE / 2f);
+                createBody.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
+                return createBody;
 
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.shape = circleShape;
-            fixtureDef.density = 0.1f;
-            fixtureDef.friction = 1f;
-            fixtureDef.filter.categoryBits = cBits;
-            fixtureDef.isSensor = false;
-            if (cBits == GameSettings.STONE_BIT) {
+            case GameSettings.GROUND_BIT:
+                def.type = BodyDef.BodyType.StaticBody;
+                def.fixedRotation = true;
+                createBody = world.createBody(def);
+
+                polygonShape = new PolygonShape();
+                float halfWidth = (width / 2f) * GameSettings.SCALE;
+                float halfHeight = (height / 2f) * GameSettings.SCALE;
+                polygonShape.setAsBox(halfWidth, halfHeight);
+
+                fixtureDef = new FixtureDef();
+                fixtureDef.shape = polygonShape;
+                fixtureDef.density = 0f;
+                fixtureDef.friction = 1f;
+                fixtureDef.filter.categoryBits = cBits;
                 fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
-            }
-            Fixture fixture = body.createFixture(fixtureDef);
-            fixture.setUserData(this);
-            circleShape.dispose();
 
-            body.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
-            return body;
+                fixture = createBody.createFixture(fixtureDef);
+                fixture.setUserData(this);
+                polygonShape.dispose();
+
+                createBody.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
+                return createBody;
+
+            default:
+                def.type = BodyDef.BodyType.DynamicBody;
+                def.fixedRotation = true;
+                createBody = world.createBody(def);
+
+                circleShape = new CircleShape();
+                circleShape.setRadius(Math.max(width, height) * GameSettings.SCALE / 2f);
+
+                fixtureDef = new FixtureDef();
+                fixtureDef.shape = circleShape;
+                fixtureDef.density = 0.1f;
+                fixtureDef.friction = 1f;
+                fixtureDef.filter.categoryBits = cBits;
+                fixtureDef.isSensor = false;
+                if (cBits == GameSettings.STONE_BIT) {
+                    fixtureDef.filter.maskBits = GameSettings.ALP_BIT;
+                }
+                fixture = createBody.createFixture(fixtureDef);
+                fixture.setUserData(this);
+                circleShape.dispose();
+
+                createBody.setTransform(x * GameSettings.SCALE, y * GameSettings.SCALE, 0);
+                return createBody;
         }
     }
 
