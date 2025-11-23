@@ -9,8 +9,8 @@ public class GameSettings {
     public static final float SCALE = 0.05f;
     public static final int ALP_WIDTH = 145;
     public static final int ALP_HEIGHT = 200;
-    public static final int AMOGUS_WIDTH = 125;
-    public static final int AMOGUS_HEIGHT = 200;
+    public static final int AMOGUS_WIDTH = 450;
+    public static final int AMOGUS_HEIGHT = 740;
     public static final int STONE_WIDTH = 100;
     public static final int STONE_HEIGHT = 100;
     public static final int SMALL_STONE_WIDTH = 92;

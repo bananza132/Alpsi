@@ -49,6 +49,7 @@ public class ScreenGame extends ScreenAdapter {
     private final TextView inventoryTextView;
     private final ButtonView homeButton;
     private final ButtonView continueButton;
+    private final ImageView amogusImage;
 
     private final BackgroundView backgroundView;
     private final TextView recordsTextView;
@@ -86,9 +87,10 @@ public class ScreenGame extends ScreenAdapter {
         inventoryButton = new ButtonView(605, 1185, 80, 80, GameResources.INVENTORY_IMG_PATH);
 
         fullBlackoutView = new ImageView(0, 0, GameResources.BLACKOUT_FULL_IMG_PATH);
-        inventoryTextView = new TextView(myGdxGame.largeWhiteFont, 150, 1200, "Inventory/pause");
+        inventoryTextView = new TextView(myGdxGame.largeWhiteFont, 250, 1200, "Inventory");
         homeButton = new ButtonView(138, 100, 200, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "Home");
         continueButton = new ButtonView(393, 100, 200, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "Continue");
+        amogusImage = new ImageView(140, 300, GameSettings.AMOGUS_WIDTH, GameSettings.AMOGUS_HEIGHT, GameResources.AMOGUS_IMG_PATH);
 
         backgroundView = new BackgroundView(GameResources.BACKGROUND_DEATH_IMG_PATH);
         recordsListView = new RecordsListView(myGdxGame.commonWhiteFont, 690);
@@ -160,6 +162,7 @@ public class ScreenGame extends ScreenAdapter {
             inventoryTextView.draw(myGdxGame.batch);
             homeButton.draw(myGdxGame.batch);
             continueButton.draw(myGdxGame.batch);
+            amogusImage.draw(myGdxGame.batch);
         } else if (gameSession.state == GameState.ENDED) {
             backgroundView.draw(myGdxGame.batch);
             fullBlackoutView.draw(myGdxGame.batch);
@@ -421,6 +424,7 @@ public class ScreenGame extends ScreenAdapter {
         inventoryTextView.dispose();
         homeButton.dispose();
         continueButton.dispose();
+        amogusImage.dispose();
 
         backgroundView.dispose();
         recordsTextView.dispose();

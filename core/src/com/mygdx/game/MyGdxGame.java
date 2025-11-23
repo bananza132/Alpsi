@@ -12,7 +12,6 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.physics.box2d.World;
 import com.mygdx.game.managers.AudioManager;
 import com.mygdx.game.screens.ScreenGame;
-import com.mygdx.game.screens.ScreenInventory;
 import com.mygdx.game.screens.ScreenMenu;
 import com.mygdx.game.screens.ScreenSettings;
 
@@ -21,13 +20,13 @@ public class MyGdxGame extends Game {
     public OrthographicCamera camera;
 
     public BitmapFont largeWhiteFont;
+    public BitmapFont largeBlackFont;
     public BitmapFont commonWhiteFont;
     public BitmapFont commonBlackFont;
     public AudioManager audioManager;
     public ScreenGame screenGame;
     public ScreenMenu screenMenu;
     public ScreenSettings screenSettings;
-    public ScreenInventory screenInventory;
     public World world;
     public Vector3 touch;
     private float accumulator = 0;
@@ -42,11 +41,11 @@ public class MyGdxGame extends Game {
 
         audioManager = new AudioManager();
         largeWhiteFont = FontBuilder.generate(48, Color.WHITE, GameResources.FONT_PATH);
+        largeBlackFont = FontBuilder.generate(80, Color.BLACK, GameResources.FONT_PATH);
         commonWhiteFont = FontBuilder.generate(24, Color.WHITE, GameResources.FONT_PATH);
         commonBlackFont = FontBuilder.generate(24, Color.BLACK, GameResources.FONT_PATH);
 
         screenGame = new ScreenGame(this);
-        screenInventory = new ScreenInventory(this);
         screenSettings = new ScreenSettings(this);
         screenMenu = new ScreenMenu(this);
 

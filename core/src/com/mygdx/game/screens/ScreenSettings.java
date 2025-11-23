@@ -37,15 +37,12 @@ public class ScreenSettings extends ScreenAdapter {
         backgroundView = new BackgroundView(GameResources.BACKGROUND_MENU_IMG_PATH);
         titleTextView = new TextView(myGdxGame.largeWhiteFont, 256, 956, "Settings");
         blackoutImageView = new ImageView(85, 365, GameResources.BLACKOUT_MIDDLE_IMG_PATH);
+
         clearSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 599, "clear records");
-
         musicSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 717, "music: " + translateStateToText(MemoryManager.loadIsMusicOn()));
-
         soundSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 658, "sound: " + translateStateToText(MemoryManager.loadIsSoundOn()));
-
         difficultSettingView = new TextView(myGdxGame.commonWhiteFont, 173, 540, "difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
-        returnButton = new ButtonView(280, 447, 160, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "return");
-
+        returnButton = new ButtonView(280, 420, 160, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_SHORT_BG_IMG_PATH, "return");
     }
 
     @Override
@@ -93,21 +90,17 @@ public class ScreenSettings extends ScreenAdapter {
                 myGdxGame.audioManager.updateSoundFlag();
             }
             if (difficultSettingView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                if (gameSession.difficult==GameDifficult.MEDIUM){
+                if (gameSession.difficult == GameDifficult.MEDIUM) {
                     MemoryManager.saveDifficult(GameDifficult.HARD);
-                    difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
                     gameSession.changeDifficult(GameDifficult.HARD);
-                }
-                else if (gameSession.difficult==GameDifficult.HARD){
+                } else if (gameSession.difficult == GameDifficult.HARD) {
                     MemoryManager.saveDifficult(GameDifficult.LIGHT);
-                    difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
                     gameSession.changeDifficult(GameDifficult.LIGHT);
-                }
-                else {
+                } else {
                     MemoryManager.saveDifficult(GameDifficult.MEDIUM);
-                    difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
                     gameSession.changeDifficult(GameDifficult.MEDIUM);
                 }
+                difficultSettingView.setText("difficult: " + translateDifficultToText(MemoryManager.loadDifficult()));
             }
         }
     }
@@ -120,7 +113,16 @@ public class ScreenSettings extends ScreenAdapter {
         if (difficult == GameDifficult.MEDIUM) return "medium";
         else if (difficult == GameDifficult.HARD) return "hard";
         else return "light";
-
     }
 
+    public void dispose() {
+        backgroundView.dispose();
+        titleTextView.dispose();
+        blackoutImageView.dispose();
+        returnButton.dispose();
+        musicSettingView.dispose();
+        soundSettingView.dispose();
+        difficultSettingView.dispose();
+        clearSettingView.dispose();
+    }
 }

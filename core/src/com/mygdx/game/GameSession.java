@@ -24,9 +24,9 @@ public class GameSession {
         if (difficult == GameDifficult.MEDIUM)
             nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
         else if (difficult == GameDifficult.HARD)
-            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * 1.5 * getStonePeriodCoolDown());
+            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN / 10f * getStonePeriodCoolDown());
         else
-            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * 0.75 * getStonePeriodCoolDown());
+            nextStoneSpawnTime = sessionStartTime + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN / 0.75 * getStonePeriodCoolDown());
         score = 0;
         climbedStonesNumber = 0;
     }
@@ -70,19 +70,24 @@ public class GameSession {
 
     public boolean shouldSpawnStone() {
         if (nextStoneSpawnTime <= TimeUtils.millis()) {
-            nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
+            if (difficult == GameDifficult.MEDIUM)
+                nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN * getStonePeriodCoolDown());
+            else if (difficult == GameDifficult.HARD)
+                nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN / 1.75f * getStonePeriodCoolDown());
+            else
+                nextStoneSpawnTime = TimeUtils.millis() + (long) (GameSettings.STARTING_STONE_APPEARANCE_COOL_DOWN / 0.75 * getStonePeriodCoolDown());
             return true;
         }
         return false;
     }
 
     private float getStonePeriodCoolDown() {
-        if ((float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000) > 1)
-            return 1f;
+        if ((float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000) < 0.5)
+            return 0.5f;
         return (float) Math.exp(-0.001 * (TimeUtils.millis() - sessionStartTime + 1) / 1000);
     }
-    public void changeDifficult(GameDifficult difficult){
-        this.difficult=difficult;
-    }
 
+    public void changeDifficult(GameDifficult difficult) {
+        this.difficult = difficult;
+    }
 }

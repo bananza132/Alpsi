@@ -9,12 +9,14 @@ import com.mygdx.game.GameResources;
 import com.mygdx.game.MyGdxGame;
 import com.mygdx.game.components.BackgroundView;
 import com.mygdx.game.components.ButtonView;
+import com.mygdx.game.components.ImageView;
 import com.mygdx.game.components.TextView;
 
 public class ScreenMenu extends ScreenAdapter {
     private final MyGdxGame myGdxGame;
+
     private final BackgroundView backgroundView;
-    private final TextView titleView;
+    private final ImageView titleView;
     private final ButtonView startButtonView;
     private final ButtonView settingsButtonView;
     private final ButtonView exitButtonView;
@@ -23,7 +25,7 @@ public class ScreenMenu extends ScreenAdapter {
         this.myGdxGame = myGdxGame;
 
         backgroundView = new BackgroundView(GameResources.BACKGROUND_MENU_IMG_PATH);
-        titleView = new TextView(myGdxGame.largeWhiteFont, 180, 960, "Space Cleaner");
+        titleView = new ImageView(20, 800, GameResources.TITLE_IMG_PATH);
         startButtonView = new ButtonView(140, 646, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "start");
         settingsButtonView = new ButtonView(140, 551, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "settings");
         exitButtonView = new ButtonView(140, 456, 440, 70, myGdxGame.commonBlackFont, GameResources.BUTTON_LONG_BG_IMG_PATH, "exit");
@@ -54,14 +56,6 @@ public class ScreenMenu extends ScreenAdapter {
             myGdxGame.touch = myGdxGame.camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
             if (startButtonView.isHit(myGdxGame.touch.x, myGdxGame.touch.y)) {
-                for (int i = 0; i < 10; i++) {
-                    Gdx.input.isTouched(i);
-                }
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 myGdxGame.setScreen(myGdxGame.screenGame);
 
             }
@@ -74,4 +68,11 @@ public class ScreenMenu extends ScreenAdapter {
         }
     }
 
+    public void dispose() {
+        backgroundView.dispose();
+        titleView.dispose();
+        startButtonView.dispose();
+        settingsButtonView.dispose();
+        exitButtonView.dispose();
+    }
 }
