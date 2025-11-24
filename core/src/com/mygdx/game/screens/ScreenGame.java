@@ -352,7 +352,8 @@ public class ScreenGame extends ScreenAdapter {
                 Vector2 grabPointMeters = new Vector2(grabX * GameSettings.SCALE, grabY * GameSettings.SCALE);
                 Vector2 alpPointMeters = new Vector2(alpHandX * GameSettings.SCALE, alpHandY * GameSettings.SCALE);
                 grabManager.grab(alpObject.getBody(), smallStone.getBody(), grabPointMeters, alpPointMeters);
-                myGdxGame.audioManager.stoneDoodleSound.play(0.2f);
+                if (myGdxGame.audioManager.isSoundOn)
+                    myGdxGame.audioManager.stoneDoodleSound.play(0.2f);
                 gameSession.climbingRegistration();
                 isGrabbing = true;
                 return;
