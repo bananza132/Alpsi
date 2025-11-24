@@ -15,7 +15,6 @@ public class BackgroundView extends View {
     @Override
     public void draw(SpriteBatch batch) {
         batch.draw(texture, x, y, GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
-        batch.draw(texture, x, y, GameSettings.SCREEN_WIDTH, GameSettings.SCREEN_HEIGHT);
     }
 
     @Override
